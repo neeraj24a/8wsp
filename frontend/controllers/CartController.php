@@ -501,6 +501,7 @@ class CartController extends Controller {
             $products = $data['products'];
             $array = [];
             foreach ($products as $prod) {
+				pre($prod, true);
                 $product = $prod['product'];
                 $quantity = $prod['quantity'];
                 $type = $prod['type'];
@@ -510,7 +511,7 @@ class CartController extends Controller {
                     if ($info !== null) {
                         $cart = new Cart();
                         $info->desc = $desc;
-                        $qty = $cart->updateCart($info, $type, $quantity);
+                        $qty = $cart->updateVariantCart($info, $type, $quantity);
                         if ($qty != null) {
                             $total = $cart->getTotal();
                             $total_qty = $cart->getTotalQuantity();
@@ -538,8 +539,8 @@ class CartController extends Controller {
 						$info->colors = $color;
                         $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
                         $cart = new Cart();
-                        $qty = $cart->updateCart($info, $type, $quantity);
-                        if ($qty != null) {
+                        $qty = $cart->updateVariantCart($info, $type, $quantity);
+						if ($qty != null) {
                             $total = $cart->getTotal();
                             $total_qty = $cart->getTotalQuantity();
                             $p['slug'] = $info->slug;

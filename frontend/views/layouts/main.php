@@ -34,7 +34,7 @@ AppAsset::register($this);
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="8thwonderpromos">
         <meta name="twitter:description" content="8thwonderpromos">
-        <link href="http://fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet" type="text/css" media="all" />
+        <link href="//fonts.googleapis.com/css?family=Ubuntu:400,700" rel="stylesheet" type="text/css" media="all" />
         <!--[if lt IE 9]>
         <script src="js/html5.js"></script>
         <![endif]-->

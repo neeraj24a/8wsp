@@ -206,9 +206,9 @@ $this->registerJs("
             $('.update-cart').on('click', function(e){
                 e.preventDefault();
                 var products = [];
-				var el = $(this);
-                $('.quantity-amount').each(function(){
+				$('.quantity-amount').each(function(){
                     var a = {};
+					var el = $(this);
                     var product = el.data('product');
                     var quantity = el.val();
                     var type = el.data('type');

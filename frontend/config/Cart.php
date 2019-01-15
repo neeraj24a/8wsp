@@ -83,16 +83,34 @@ class Cart {
                 $this->session['cart'][$type] = [];
             }
             $cart = $this->session->get('cart');
-            $cart[$type][$product->slug]->quantity = $quantity;
             if($type == 'drop'){
                 $cart[$type][$product->slug]->desc = $product->desc;
+				$cart[$type][$product->slug]->quantity = $quantity;
+				$drop_qty = $cart['shop'][$product->slug]->quantity;
+				return $drop_qty;
             } else {
 				$cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
 			}
             $this->session->set('cart', $cart);
-            return $cart[$type][$product->slug]->quantity;
+			$qty = $this->updateCart($product);
+            return $qty;
         }
     }
+	
+	public function updateCart($product){
+		$cart = $this->session->get('cart');
+		if(isset($cart['shop'])){
+			$cart['shop'][$product->slug]->quantity = 0;
+			$prod = $cart['shop'][$product->slug];
+			foreach($prod->var_qnty as $key => $val){
+				foreach($val as $k => $v){
+					$cart['shop'][$product->slug]->quantity = $cart['shop'][$product->slug]->quantity + $v;
+				}
+			}
+		}
+		$this->session->set('cart', $cart);
+		return $cart['shop'][$product->slug]->quantity;
+	}
 
     public function removeFromCart($product, $type) {
         $cart = $this->session->get('cart');
