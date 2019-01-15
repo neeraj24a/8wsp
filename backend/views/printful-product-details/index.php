@@ -38,7 +38,13 @@ $this->params['breadcrumbs'][] = $this->title;
                             'tableOptions' => ['class' => 'table'],
                             'columns' => [
                                 ['class' => 'yii\grid\SerialColumn'],
-                                'printful_product',
+                                [
+                                    'attribute' => 'printful_product',
+                                    'filter' => ArrayHelper::map(backend\models\PrintfulProducts::findAll(['status' => 1]), 'id', 'printful_product_name'),
+                                    'value' => function($model) {
+                                        return \backend\models\PrintfulProducts::findOne($model->printful_product)->printful_product_name;
+                                    }
+                                ],
                                 'color',
                                 'size',
                                 'printful_product_id',

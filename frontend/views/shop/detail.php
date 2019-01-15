@@ -65,7 +65,7 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
                         </label>
                         <select class="single-option-selector single-option-selector-product-template product-form__input" name="color">
                           <?php
-                            $variants = backend\models\PrintfulProductDetails::find()->where(['printful_product' , $model->printful_product])->groupBy([
+                            $variants = backend\models\PrintfulProductDetails::find()->where(['printful_product' => $model->printful_product])->groupBy([
                                             'color'])->all();
                             foreach($variants as $variant):
                           ?>

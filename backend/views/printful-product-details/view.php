@@ -6,8 +6,9 @@ use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
 /* @var $model backend\models\Products */
-
-$this->title = $model->printful_product_name;
+$prod = backend\models\PrintfulProducts::findOne($model->printful_product);
+$this->title = $prod->printful_product_name;
+$model->printful_product = $prod->printful_product_name;
 $this->params['breadcrumbs'][] = ['label' => 'Printful Product Details', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>

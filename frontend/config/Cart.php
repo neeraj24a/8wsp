@@ -55,15 +55,15 @@ class Cart {
 				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity + $quantity;
 			} else {
 				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity + $quantity;
-				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+				$cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
 			}
 		} else {
 			if($type == 'shop'){
 				$cart[$type][$product->slug] = $product;
 				$cart[$type][$product->slug]->quantity = $quantity;
 				$cart[$type][$product->slug]->var_qnty = [];
-				$cart[$type][$product->slug]->var_qnty[$product->color] = [];
-				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+				$cart[$type][$product->slug]->var_qnty[$product->colors] = [];
+				$cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
 			} else {
 				$cart[$type][$product->slug] = $product;
 				$cart[$type][$product->slug]->quantity = $quantity;
@@ -87,7 +87,7 @@ class Cart {
             if($type == 'drop'){
                 $cart[$type][$product->slug]->desc = $product->desc;
             } else {
-				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+				$cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
 			}
             $this->session->set('cart', $cart);
             return $cart[$type][$product->slug]->quantity;
@@ -97,14 +97,14 @@ class Cart {
     public function removeFromCart($product, $type) {
         $cart = $this->session->get('cart');
 		if($type == 'shop'){
-			$rmQty = $cart[$type][$product->slug]->var_qnty[$product->color][$product->size];
+			$rmQty = $cart[$type][$product->slug]->var_qnty[$product->colors][$product->size];
 		
 			if ($rmQty == $cart[$type][$product->slug]->quantity){
 				unset($cart[$type][$product->slug]);
 			} else {
-				delete $cart[$type][$product->slug]->var_qnty[$product->color][$product->size];
-				if(sizeof($cart[$type][$product->slug]->var_qnty[$product->color]) == 0){
-					delete $cart[$type][$product->slug]->var_qnty[$product->color];
+				unset($cart[$type][$product->slug]->var_qnty[$product->colors][$product->size]);
+				if(sizeof($cart[$type][$product->slug]->var_qnty[$product->colors]) == 0){
+					unset($cart[$type][$product->slug]->var_qnty[$product->colors]);
 				}
 				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity - $rmQty;
 			}

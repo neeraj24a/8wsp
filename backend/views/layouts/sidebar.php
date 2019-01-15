@@ -93,6 +93,22 @@ use yii\helpers\Url;
                     <span data-localize="sidebar.nav.element.ELEMENTS">Products</span>
                 </a>
             </li>
+			<li class="nav-item  <?php if ($active == "product") {
+                            echo 'active';
+                        } ?>">
+                <a class="nav-link" href="<?php echo Url::toRoute("/printful-products"); ?>" title="Users">
+                    <i class="material-icons">person</i>
+                    <span data-localize="sidebar.nav.element.ELEMENTS">Printful Products</span>
+                </a>
+            </li>
+			<li class="nav-item  <?php if ($active == "product") {
+                            echo 'active';
+                        } ?>">
+                <a class="nav-link" href="<?php echo Url::toRoute("/printful-product-details"); ?>" title="Users">
+                    <i class="material-icons">person</i>
+                    <span data-localize="sidebar.nav.element.ELEMENTS">Printful Product Details</span>
+                </a>
+            </li>
             <li class="nav-item  <?php if ($active == "drop") {
                             echo 'active';
                         } ?>">

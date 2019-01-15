@@ -56,14 +56,14 @@ $this->title = "8thwonderpromos Cart";
 											</a>
 										</div>
 										<div class="cart__meta-text">
-											Size: <?php echo $info->size; ?><br>
+											Size: <?php echo $k; ?> Color: <?php echo $key; ?><br>
 										</div>
 										<p class="small--hide">
 											<a href="/cart/change?line=1&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">Remove</a>
 										</p>
 									</td>
 									<td class="cart__price-wrapper cart-flex-item">
-										$$<?php echo $info->unit_price; ?>
+										$<?php echo $info->unit_price; ?>
 										<div class="cart__edit medium-up--hide">
 											<button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line1">
 												<span class="cart__edit-text--edit">Edit</span>

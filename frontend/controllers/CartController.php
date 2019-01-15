@@ -38,7 +38,7 @@ class CartController extends Controller {
         $offer = $cart->getOffer();
         $total = $cart->getTotal();
         $totalWithOffer = $cart->getTotalWithOffer();
-        return $this->render('index', ['cart' => $cart->getCart(), 'offer' => $offer, 'subscription' => $subscription, 'total' => $total, 'totalWithOffer' => $totalWithOffer, 'quantity' => $cart->getTotalQuantity()]);
+		return $this->render('index', ['cart' => $cart->getCart(), 'offer' => $offer, 'subscription' => $subscription, 'total' => $total, 'totalWithOffer' => $totalWithOffer, 'quantity' => $cart->getTotalQuantity()]);
     }
 
     public function actionCheckout() {
@@ -103,9 +103,9 @@ class CartController extends Controller {
                 $item = [];
 				foreach($shop->var_qnty as $key => $val){
 					foreach($val as $k => $v){
-						$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
+						$p = PrintfulProductDetails::find()->where(['and', "printful_product = '".$shop->printful_product."'","color = '".$key."'", "size = '".$k."'"])->one();
 						$item['quantity'] = $shop->quantity;
-						$item['variant_id'] = $p;
+						$item['variant_id'] = $p->printful_product_id;
 						array_push($items, $item);
 					}
 				}
@@ -117,10 +117,15 @@ class CartController extends Controller {
         try {
             // Calculate shipping rates for an order
             $response = $pf->post('shipping/rates', $request);
-            $ship_cost = $response['rate'];
-			$cart->setShippingCost = $ship_cost;
-            $this->redirect(['/cart/payment']);
-        } catch (PrintfulApiException $e) { //API response status code was not successful
+			foreach($response as $res){
+				if($res['id'] == 'STANDARD'){
+					$ship_cost = $res['rate'];
+					$cart->setShippingCost($ship_cost);
+					break;
+				}
+			}
+			$this->redirect(['/cart/payment']);
+		} catch (PrintfulApiException $e) { //API response status code was not successful
             echo 'Printful API Exception: ' . $e->getCode() . ' ' . $e->getMessage();
         } catch (PrintfulException $e) { //API call failed
             echo 'Printful Exception: ' . $e->getMessage();
@@ -349,15 +354,15 @@ class CartController extends Controller {
             foreach($products['shop'] as $shop){
                 $item = [];
 				$url = Url::base(true);
-				$img = str_replace('/assets', $url./assets, $shop->main_image);
+				$img = str_replace('/assets', $url.'/assets', $shop->main_image);
 				foreach($shop->var_qnty as $key => $val){
 					foreach($val as $k => $v){
-						$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
+						$p = PrintfulProductDetails::find()->where(['and', "printful_product = $shop->printful_product","color = $key", "size = $k"])->one();
 						$item['quantity'] = $shop->quantity;
 						$item['variant_id'] = $p;
 						$item['files'] = [
 							[
-								'url': $img
+								'url' => $img
 							]
 						];
 						array_push($items, $item);
@@ -463,14 +468,14 @@ class CartController extends Controller {
                 }
             } else {
                 $info = Products::findOne(['slug' => $product]);
-                if ($info !== null) {
+				if ($info !== null) {
                     $size = $data['size'];
 					$color = $data['color'];
                     $info->size = $size;
-					$info->color = $color;
+					$info->colors = $color;
                     $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
                     $cart = new Cart();
-                    $qty = $cart->addToCart($info, $type, $quantity);
+					$qty = $cart->addToCart($info, $type, $quantity);
                     $total = $cart->getTotal();
                     $total_qty = $cart->getTotalQuantity();
                     $p['slug'] = $info->slug;
@@ -530,7 +535,7 @@ class CartController extends Controller {
 						$size = $prod['size'];
 						$color = $prod['color'];
 						$info->size = $size;
-						$info->color = $color;
+						$info->colors = $color;
                         $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
                         $cart = new Cart();
                         $qty = $cart->updateCart($info, $type, $quantity);
@@ -579,7 +584,7 @@ class CartController extends Controller {
 					$size = $data['size'];
 					$color = $data['color'];
 					$info->size = $size;
-					$info->color = $color;
+					$info->colors = $color;
                     $cart = new Cart();
                     $qty = $cart->removeFromCart($info, 'shop');
                     $total = $cart->getTotal();
