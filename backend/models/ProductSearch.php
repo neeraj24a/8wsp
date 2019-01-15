@@ -18,7 +18,7 @@ class ProductSearch extends Products
     public function rules()
     {
         return [
-            [['id', 'sku', 'slug', 'name', 'description', 'category', 'unit_price', 'offer_price', 'variation', 'size', 'colors', 'weight_type', 'weight', 'available', 'is_synced', 'printful_id', 'external_id', 'discount', 'main_image', 'is_featured', 'status', 'deleted', 'created_by', 'modified_by', 'date_entered', 'date_modified'], 'safe'],
+            [['id', 'printful_product', 'sku', 'slug', 'name', 'description', 'category', 'unit_price', 'offer_price', 'variation', 'size', 'colors', 'weight_type', 'weight', 'available', 'is_synced', 'printful_id', 'external_id', 'discount', 'main_image', 'is_featured', 'status', 'deleted', 'created_by', 'modified_by', 'date_entered', 'date_modified'], 'safe'],
             [['units_in_stock'], 'integer'],
         ];
     }
@@ -65,6 +65,7 @@ class ProductSearch extends Products
         ]);
 
         $query->andFilterWhere(['like', 'id', $this->id])
+			->andFilterWhere(['printful_product', 'printful_product', $this->id])
             ->andFilterWhere(['like', 'sku', $this->sku])
             ->andFilterWhere(['like', 'slug', $this->slug])
             ->andFilterWhere(['like', 'name', $this->name])

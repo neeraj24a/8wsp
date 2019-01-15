@@ -19,8 +19,8 @@ use yii\widgets\ActiveForm;
             <div class="col-lg-12">
                 <div class="col-lg-12">
                     <div class="form-group">
-                        <?php $list = ArrayHelper::map(backend\models\PrintfulProducts::find()->where(['status' => 1])->groupBy(['printful_product_name'])->all(), 'printful_product_name', 'printful_product_name'); ?>
-                        <?= $form->field($model, 'product_type')->dropDownList($list,['prompt' => 'Select Printful Product','class' => 'form-control', 'onchange' => '$.post( "'.Yii::$app->urlManager->createUrl('products/printful-info?product=').'"+$(this).val(), function( data ) {$( "#printful_info" ).html( data );});']) ?>
+                        <?php $list = ArrayHelper::map(backend\models\PrintfulProducts::find()->where(['status' => 1])->all(), 'id', 'printful_product_name'); ?>
+                        <?= $form->field($model, 'printful_product')->dropDownList($list,['prompt' => 'Select Printful Product','class' => 'form-control', 'onchange' => '$.post( "'.Yii::$app->urlManager->createUrl('products/printful-info?product=').'"+$(this).val(), function( data ) {$( "#printful_info" ).html( data );});']) ?>
                     </div>
                 </div>
             </div>
@@ -78,10 +78,10 @@ use yii\widgets\ActiveForm;
                     </div>
                 </div>
             </div>
-            <div class="col-lg-12">
+            <!--<div class="col-lg-12">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <?= $form->field($model, 'size')->textInput(['maxlength' => true,'class' => 'form-control', 'value' => 'XS, S, M, L, Xl, XXL, XXXL']) ?>
+                        <?= $form->field($model, 'size')->textInput(['maxlength' => true,'class' => 'form-control', 'value' => 'XS, S, M, L, XL, XXL, XXXL']) ?>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -89,7 +89,7 @@ use yii\widgets\ActiveForm;
 						<?= $form->field($model, 'colors')->textInput(['maxlength' => true,'class' => 'form-control', 'id' => 'colors']) ?>
                     </div>
                 </div>
-            </div>
+            </div>-->
             <div class="col-lg-12">
                 <div class="col-lg-6">
                     <div class="form-group">

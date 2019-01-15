@@ -58,7 +58,7 @@ class OrderDetails extends \yii\db\ActiveRecord
             [['id', 'order', 'product', 'created_by', 'modified_by'], 'string', 'max' => 36],
             [['product_price', 'purchased_price'], 'string', 'max' => 16],
             [['status', 'deleted'], 'string', 'max' => 1],
-            [['description'], 'string'],
+            [['quantity_details, description'], 'string'],
             [['id'], 'unique'],
         ];
     }

@@ -293,7 +293,7 @@ $this->title = "Checkout";
                                         <th class="total-line__name">Shipping</th>
                                         <td class="total-line__price">
                                             <span class="order-summary__small-text">
-                                                Calculated at next step
+                                                 $<?php echo $shipping_cost; ?>
                                             </span>
                                         </td>
                                     </tr>
@@ -321,7 +321,7 @@ $this->title = "Checkout";
                             <div class="visually-hidden">
                                 Updated total price:
                                 <span>
-                                    $<?php echo $totalWithOffer; ?>
+                                    $<?php echo $sub_total; ?>
                                 </span>
                             </div>
                         </div>

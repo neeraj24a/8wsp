@@ -9,6 +9,9 @@ use Yii;
  * 
  * @property string $id
  * @property string $printful_product_name
+ * @property string $color
+ * @property string $size
+ * @property int $printful_product_id
  * @property int $status
  * @property int $deleted
  * @property string $created_by
@@ -16,14 +19,14 @@ use Yii;
  * @property string $date_entered
  * @property string $date_modified
  */ 
-class PrintfulProducts extends \yii\db\ActiveRecord
+class PrintfulProductDetails extends \yii\db\ActiveRecord
 { 
     /** 
      * @inheritdoc 
      */ 
     public static function tableName() 
     { 
-        return 'printful_products'; 
+        return 'printful_product_details'; 
     }
 
     public function beforeSave($insert) {
@@ -49,9 +52,10 @@ class PrintfulProducts extends \yii\db\ActiveRecord
     public function rules() 
     { 
         return [
-            [['printful_product_name'], 'required'],
+            [['printful_product', 'color', 'size', 'printful_product_id'], 'required'],
+            [['printful_product_id'], 'integer'],
             [['date_entered', 'date_modified'], 'safe'],
-            [['id', 'created_by', 'modified_by'], 'string', 'max' => 36],
+            [['id','printful_product', 'color', 'size', 'created_by', 'modified_by'], 'string', 'max' => 36],
             [['printful_product_name'], 'string', 'max' => 255],
             [['status', 'deleted'], 'string', 'max' => 1],
             [['id'], 'unique'],
@@ -65,7 +69,10 @@ class PrintfulProducts extends \yii\db\ActiveRecord
     { 
         return [ 
             'id' => 'ID',
-            'printful_product_name' => 'Printful Product Name',
+            'printful_product' => 'Printful Product',
+            'color' => 'Color',
+            'size' => 'Size',
+            'printful_product_id' => 'Printful Product ID',
             'status' => 'Status',
             'deleted' => 'Deleted',
             'created_by' => 'Created By',

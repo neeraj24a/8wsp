@@ -36,54 +36,58 @@ $this->title = "8thwonderpromos Cart";
                     <?php if(isset($cart['shop'])): ?>
                     <?php foreach($cart['shop'] as $info):
                         $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
-                    ?>
-                    <tr class="cart__row border-bottom line1 cart-flex border-top" id="<?php echo $info->slug; ?>">
-                        <td class="cart__image-wrapper cart-flex-item">
-                            <a href="<?php echo Url::toRoute('/shop/detail?product='.$info->slug); ?>">
-                                <img class="cart__image" src="<?php echo $img; ?>" alt="<?php echo $info->name; ?>">
-                            </a>
-                        </td>
-                        <td class="cart__meta small--text-left cart-flex-item">
-                            <div class="list-view-item__title">
-                                <a href="<?php echo Url::toRoute('/shop/detail?product='.$info->slug); ?>">
-                                    <?php echo $info->name; ?>
-                                    <span class="medium-up--hide">
-                                        <span class="visually-hidden">Quantity</span>
-                                        (x<?php echo $info->quantity; ?>)
-                                    </span>
-                                </a>
-                            </div>
-                            <div class="cart__meta-text">
-                                Size: <?php echo $info->size; ?><br>
-                            </div>
-                            <p class="small--hide">
-                                <a href="/cart/change?line=1&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">Remove</a>
-                            </p>
-                        </td>
-                        <td class="cart__price-wrapper cart-flex-item">
-                            $$<?php echo $info->unit_price; ?>
-                            <div class="cart__edit medium-up--hide">
-                                <button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line1">
-                                    <span class="cart__edit-text--edit">Edit</span>
-                                    <span class="cart__edit-text--cancel">Cancel</span>
-                                </button>
-                            </div>
-                        </td>
-                        <td class="cart__update-wrapper cart-flex-item text-right">
-                            <a href="javascript:void(0);" class="btn btn--small btn--secondary cart__remove medium-up--hide removeFromCart" data-slug="<?php echo $info->slug; ?>">Remove</a>
-                            <div class="cart__qty">
-                                <label class="cart__qty-label">Quantity</label>
-                                <input class="cart__qty-input quantity-amount" type="number" data-type="shop" data-product="<?php echo $info->slug; ?>" value="<?php echo $info->quantity; ?>" min="0" pattern="[0-9]*">
-                            </div>
-                            <input type="submit" name="update" class="btn btn--small cart__update medium-up--hide" value="Update">
-                        </td>
-                        <td class="text-right small--hide">
-                            <div>
-                                $<?php echo $info->quantity * $info->unit_price; ?>
-                            </div>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
+					?>
+						<?php foreach($info->var_qnty as $key => $val): ?>
+							<?php foreach($val as $k => $v): ?>
+								<tr class="cart__row border-bottom line1 cart-flex border-top" id="<?php echo $info->slug; ?>">
+									<td class="cart__image-wrapper cart-flex-item">
+										<a href="<?php echo Url::toRoute('/shop/detail?product='.$info->slug); ?>">
+											<img class="cart__image" src="<?php echo $img; ?>" alt="<?php echo $info->name; ?>">
+										</a>
+									</td>
+									<td class="cart__meta small--text-left cart-flex-item">
+										<div class="list-view-item__title">
+											<a href="<?php echo Url::toRoute('/shop/detail?product='.$info->slug); ?>">
+												<?php echo $info->name; ?>
+												<span class="medium-up--hide">
+													<span class="visually-hidden">Quantity</span>
+													(x<?php echo $info->quantity; ?>)
+												</span>
+											</a>
+										</div>
+										<div class="cart__meta-text">
+											Size: <?php echo $info->size; ?><br>
+										</div>
+										<p class="small--hide">
+											<a href="/cart/change?line=1&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">Remove</a>
+										</p>
+									</td>
+									<td class="cart__price-wrapper cart-flex-item">
+										$$<?php echo $info->unit_price; ?>
+										<div class="cart__edit medium-up--hide">
+											<button type="button" class="btn btn--secondary btn--small js-edit-toggle cart__edit--active" data-target="line1">
+												<span class="cart__edit-text--edit">Edit</span>
+												<span class="cart__edit-text--cancel">Cancel</span>
+											</button>
+										</div>
+									</td>
+									<td class="cart__update-wrapper cart-flex-item text-right">
+										<a href="javascript:void(0);" class="btn btn--small btn--secondary cart__remove medium-up--hide removeFromCart" data-slug="<?php echo $info->slug; ?>" data-type="shop" data-size="<?php echo $k; ?>" data-color="<?php echo $key; ?>">Remove</a>
+										<div class="cart__qty">
+											<label class="cart__qty-label">Quantity</label>
+											<input class="cart__qty-input quantity-amount" type="number" data-type="shop" data-product="<?php echo $info->slug; ?>" data-size="<?php echo $k; ?>" data-color="<?php echo $key; ?>" value="<?php echo $v; ?>" min="0" pattern="[0-9]*">
+										</div>
+										<input type="submit" name="update" class="btn btn--small cart__update medium-up--hide" value="Update">
+									</td>
+									<td class="text-right small--hide">
+										<div>
+											$<?php echo $v * $info->unit_price; ?>
+										</div>
+									</td>
+								</tr>
+							<?php endforeach; ?>
+						<?php endforeach; ?>
+					<?php endforeach; ?>
                     <?php endif; ?>
                     <?php if(isset($cart['drop'])): ?>
                     <?php foreach($cart['drop'] as $info):
@@ -109,7 +113,7 @@ $this->title = "8thwonderpromos Cart";
                                 <textarea class="form-control desc"><?php echo $info->desc; ?></textarea>
                             </div>
                             <p class="small--hide">
-                                <a href="javascript:void(0);" class="btn btn--small btn--secondary cart__remove removeFromCart" data-slug="<?php echo $info->slug; ?>">Remove</a>
+                                <a href="javascript:void(0);" class="btn btn--small btn--secondary cart__remove removeFromCart" data-type="drop" data-slug="<?php echo $info->slug; ?>">Remove</a>
                             </p>
                         </td>
                         <td class="cart__price-wrapper cart-flex-item">
@@ -175,11 +179,22 @@ $this->title = "8thwonderpromos Cart";
 $this->registerJs("
         $(document).ready(function(){
             $('.removeFromCart').on('click', function(){
-                var product = $(this).attr('data-slug');
-                $.ajax({
+				var el = $(this);
+                var product = el.attr('data-slug');
+				var type = el.attr('data-type');
+				var reqObj = {};
+				reqObj.product = product;
+				reqObj.type = type;
+				if(type == 'shop'){
+					var color = el.attr('data-color');
+					var size = el.attr('data-size');
+					reqObj.color = color;
+					reqObj.size = size;
+				}
+				$.ajax({
                     url: base_url + 'cart/remove',
                     method: 'POST',
-                    data: {'product': product, 'type': 'drop'},
+                    data: reqObj,
                     success: function (data) {
                         data = $.parseJSON(data);
                         if(data.quantity == 0){
@@ -191,14 +206,18 @@ $this->registerJs("
             $('.update-cart').on('click', function(e){
                 e.preventDefault();
                 var products = [];
+				var el = $(this);
                 $('.quantity-amount').each(function(){
                     var a = {};
-                    var product = $(this).data('product');
-                    var quantity = $(this).val();
-                    var type = $(this).data('type');
+                    var product = el.data('product');
+                    var quantity = el.val();
+                    var type = el.data('type');
                     if(type == 'drop'){
                         a['desc'] = $('.cart__meta-text textarea').val();
-                    }
+                    } else {
+						a['color'] = el.data('color');
+						a['size'] = el.data('size');
+					}
                     if(quantity == 0){
                         $('#'+product).remove();
                     }

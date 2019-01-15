@@ -10,7 +10,7 @@ use Printful\PrintfulApiClient;
 use Yii;
 use backend\models\Products;
 use backend\models\PrintfulProducts;
-use backend\models\ProductsAtPrintful;
+use backend\models\PrintfulProductDetails;
 use yii\web\UploadedFile;
 use backend\models\ProductSearch;
 use yii\web\Controller;
@@ -105,12 +105,13 @@ class ProductsController extends Controller {
 
     public function actionPrintfulInfo($product){
         if(!empty($product)){
-            $products = PrintfulProducts::find()->where(['printful_product_name' => $product])
-                        ->groupBy(['color'])
+            $products = PrintfulProductDetails::find()->where(['printful_product' => $product])
+                        ->groupBy(['color','size'])
                         ->orderBy([
                             'color' => SORT_ASC,
+							'size' => SORT_ASC,
                         ])->all();
-            $html = $this->renderPartial('_printful-products', ['products' => $products]);
+			$html = $this->renderPartial('_printful-products', ['products' => $products]);
             echo $html;
         }
     }
@@ -167,7 +168,7 @@ class ProductsController extends Controller {
         $request['sync_product']  = ['name' => $model->name,'thumbnail' => $img];
         $variants = [];
         // $sizes = explode(',', $model->size);
-        $vv = PrintfulProducts::find()->where(['LIKE','printful_product_name' , 'T-Shirt'])
+        $vv = PrintfulProductDetails::find()->where(['printful_product' , $model->printful_product])
                         ->orderBy([
                             'color' => SORT_ASC,
                             'size' => SORT_ASC,
@@ -183,19 +184,7 @@ class ProductsController extends Controller {
             ];
             array_push($variants, $variant);
         }
-        /*$i = 1;
-        foreach($sizes as $size){
-            $variant = [
-                'retail_price' => $model->unit_price,
-                'variant_id' => $i,
-                'size' => trim($size),
-                'files' => [
-                    ['url' => $img]
-                ]
-            ];
-            array_push($variants, $variant);
-            $i++;
-        }*/
+		
         $request['sync_variants'] = $variants;
         // pre($request, true);
         
@@ -206,8 +195,6 @@ class ProductsController extends Controller {
             $printful_id = $response['id'];
             $external_id = $response['external_id'];
             $model->is_synced = 1;
-            /*$model->printful_id = $printful_id;
-            $model->external_id = $external_id;*/
             $model->save(false);
             return $this->redirect(Yii::$app->request->referrer);
         } catch (PrintfulApiException $e) { //API response status code was not successful

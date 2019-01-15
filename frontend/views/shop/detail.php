@@ -53,10 +53,10 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
               					<select class="single-option-selector single-option-selector-product-template product-form__input" name="size">
                   					<option value="XS" selected="selected">XS</option>
                   					<option value="S">S</option>
-                            <option value="M">M</option>
-                					  <option value="L">L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
+									<option value="M">M</option>
+                					<option value="L">L</option>
+									<option value="XL">XL</option>
+									<option value="XXL">XXL</option>
                 				</select>
             				</div>
                     <div class="selector-wrapper product-form__item">
@@ -65,8 +65,8 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
                         </label>
                         <select class="single-option-selector single-option-selector-product-template product-form__input" name="color">
                           <?php
-                            $variants = backend\models\PrintfulProducts::find()->where(['LIKE','printful_product_name' , 'T-Shirt'])->groupBy([
-                                            'color','printful_product_name'])->all();
+                            $variants = backend\models\PrintfulProductDetails::find()->where(['printful_product' , $model->printful_product])->groupBy([
+                                            'color'])->all();
                             foreach($variants as $variant):
                           ?>
                             <option value="<?php echo $variant->color; ?>"><?php echo $variant->color; ?></option>

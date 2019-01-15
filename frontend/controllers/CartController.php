@@ -10,10 +10,16 @@ use backend\models\Address;
 use backend\models\Guests;
 use backend\models\Orders;
 use backend\models\OrderDetails;
+use backend\models\PrintfulProductDetails;
+
 use frontend\config\Cart;
 use frontend\models\AddressForm;
 use frontend\models\Users;
 use frontend\config\Paypal;
+
+use Printful\Exceptions\PrintfulApiException;
+use Printful\Exceptions\PrintfulException;
+use Printful\PrintfulApiClient;
 
 class CartController extends Controller {
 
@@ -83,19 +89,43 @@ class CartController extends Controller {
             $shipping['address_type'] = 'shipping';
             $cart->setShippingAddress($shipping);
         }
+		$pf = new PrintfulApiClient('ciac7wnf-7cvl-wa20:io6q-8d0qfxlnvf42');
+        $request = [];
+		$request['recipient']  = ['address1' => $add['ship_address_line_1'],'city' => $add['ship_city'],'country_code' => 'US', 'state_code' => $add['ship_state'], 'zip' => $add['ship_zip']];
+		$cart = new Cart();
+		if ($cart->getCart() == NULL) {
+            return $this->redirect(['/cart']);
+        }
+        $products = $cart->getCart();
+		$items = [];
+		if(isset($products['shop'])){
+            foreach($products['shop'] as $shop){
+                $item = [];
+				foreach($shop->var_qnty as $key => $val){
+					foreach($val as $k => $v){
+						$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
+						$item['quantity'] = $shop->quantity;
+						$item['variant_id'] = $p;
+						array_push($items, $item);
+					}
+				}
+			}
+        }
+		
+		$request['items'] = $items;
 
-        /*$body = $this->renderPartial('_success', ['order' => $order, 'detail' => $detail, 'shipping' => $shipping_address, 'billing' => $billing_address]);
-
-        $user = Users::findOne(Yii::$app->user->id);
-
-        $u = new Users;
-        $adminEmail = Yii::$app->params['adminEmail'];
-        $u->sendEmail($adminEmail, $adminEmail, $body, 'Pixelstore', $user->email, $body, $user->first_name . ' ' . $user->last_name);
-        */
-        //send email
-
-
-        $this->redirect(['/cart/payment']);
+        try {
+            // Calculate shipping rates for an order
+            $response = $pf->post('shipping/rates', $request);
+            $ship_cost = $response['rate'];
+			$cart->setShippingCost = $ship_cost;
+            $this->redirect(['/cart/payment']);
+        } catch (PrintfulApiException $e) { //API response status code was not successful
+            echo 'Printful API Exception: ' . $e->getCode() . ' ' . $e->getMessage();
+        } catch (PrintfulException $e) { //API call failed
+            echo 'Printful Exception: ' . $e->getMessage();
+            var_export($pf->getLastResponseRaw());
+        }
     }
 
     public function actionPayment() {
@@ -111,8 +141,10 @@ class CartController extends Controller {
         $total = $cart->getTotal();
         $totalWithOffer = $cart->getTotalWithOffer();
         $offerAmount = $cart->getOfferAmount();
+		$sub_total = $cart->getSubTotal();
         $billing = $cart->billingAddress();
         $shipping = $cart->shippingAddress();
+		$shipping_cost = $cart->getShippingCost();
         $guest = '';
         if (Yii::$app->user->isGuest){
             $guest = $cart->getGuest();
@@ -150,12 +182,12 @@ class CartController extends Controller {
         $items = json_encode($items);
         $transaction = "[{
                           amount: {
-                            total: '".$totalWithOffer."',
+                            total: '".$sub_total."',
                             currency: 'USD',
                             details: {
                               subtotal: '".$totalWithOffer."',
                               tax: '0.00',
-                              shipping: '0.00',
+                              shipping: '".$shipping_cost."',
                               handling_fee: '0.00',
                               shipping_discount: '0.00',
                               insurance: '0.00'
@@ -172,7 +204,7 @@ class CartController extends Controller {
                             items: ".$items."
                           }
                         }]";
-        return $this->render('payment', ['addresses' => $addresses, 'offer' => $offer, 'total' => $total, 'totalWithOffer' => $totalWithOffer, 'model' => $model, 'add_model' => $add_model, 'cart' => $cart->getCart(), 'total' => $total, 'billing' => $billing, 'shipping' => $shipping, 'transaction' => $transaction, 'guest' => $guest]);
+        return $this->render('payment', ['addresses' => $addresses, 'offer' => $offer, 'totalWithOffer' => $totalWithOffer, 'model' => $model, 'add_model' => $add_model, 'cart' => $cart->getCart(), 'total' => $total, 'billing' => $billing, 'shipping' => $shipping, 'shipping_cost' => $shipping_cost, 'sub_total' => $sub_total, 'transaction' => $transaction, 'guest' => $guest]);
     }
 
     public function actionTransact() {
@@ -286,7 +318,8 @@ class CartController extends Controller {
                 $detail->product_price = $info->unit_price;
                 $detail->purchased_price = number_format($info->unit_price - ($offer/100 * $info->unit_price), 2);
                 $detail->quantity = $info->quantity;
-                $detail->save(false);
+				$detail->quantity_details = serialize($info->var_qnty);
+				$detail->save(false);
             }
         }
 
@@ -302,6 +335,54 @@ class CartController extends Controller {
                 $detail->save(false);
             }
         }
+		
+		$pf = new PrintfulApiClient('ciac7wnf-7cvl-wa20:io6q-8d0qfxlnvf42');
+        $request = [];
+		$request['recipient']  = ['address1' => $add['ship_address_line_1'],'city' => $add['ship_city'],'country_code' => 'US', 'state_code' => $add['ship_state'], 'zip' => $add['ship_zip']];
+		$cart = new Cart();
+		if ($cart->getCart() == NULL) {
+            return $this->redirect(['/cart']);
+        }
+        $products = $cart->getCart();
+		$items = [];
+		if(isset($products['shop'])){
+            foreach($products['shop'] as $shop){
+                $item = [];
+				$url = Url::base(true);
+				$img = str_replace('/assets', $url./assets, $shop->main_image);
+				foreach($shop->var_qnty as $key => $val){
+					foreach($val as $k => $v){
+						$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
+						$item['quantity'] = $shop->quantity;
+						$item['variant_id'] = $p;
+						$item['files'] = [
+							[
+								'url': $img
+							]
+						];
+						array_push($items, $item);
+					}
+				}
+			}
+        }
+		
+		$request['items'] = $items;
+
+        try {
+            // Calculate shipping rates for an order
+            $response = $pf->post('shipping/rates', $request);
+			pre($response, true);
+            $ship_cost = $response['rate'];
+			$cart->setShippingCost = $ship_cost;
+            $this->redirect(['/cart/payment']);
+        } catch (PrintfulApiException $e) { //API response status code was not successful
+            echo 'Printful API Exception: ' . $e->getCode() . ' ' . $e->getMessage();
+        } catch (PrintfulException $e) { //API call failed
+            echo 'Printful Exception: ' . $e->getMessage();
+            var_export($pf->getLastResponseRaw());
+        }
+		
+		
         $res = [];
         $res['order'] = $order->order_number;
         echo json_encode($res, true);
@@ -345,7 +426,7 @@ class CartController extends Controller {
             $product = $data['product'];
             $quantity = $data['quantity'];
             $type = $data['type'];
-            if($type == 'drop'){
+			if($type == 'drop'){
                 $desc = $data['description'];
                 $info = Drops::findOne(['slug' => $product]);
                 if ($info !== null) {
@@ -384,7 +465,9 @@ class CartController extends Controller {
                 $info = Products::findOne(['slug' => $product]);
                 if ($info !== null) {
                     $size = $data['size'];
+					$color = $data['color'];
                     $info->size = $size;
+					$info->color = $color;
                     $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
                     $cart = new Cart();
                     $qty = $cart->addToCart($info, $type, $quantity);
@@ -397,6 +480,7 @@ class CartController extends Controller {
                     $p['main_image'] = $img;
                     $p['qty'] = $qty;
                     $p['size'] = $size;
+					$p['color'] = $color;
                     $p['total'] = $total;
                     $p['quantity'] = $total_qty;
                     $p['items'] = $cart->getItemCount();
@@ -443,6 +527,10 @@ class CartController extends Controller {
                 } else {
                     $info = Products::findOne(['slug' => $product]);
                     if ($info !== null) {
+						$size = $prod['size'];
+						$color = $prod['color'];
+						$info->size = $size;
+						$info->color = $color;
                         $img = str_replace('../', Yii::$app->homeUrl, $info->main_image);
                         $cart = new Cart();
                         $qty = $cart->updateCart($info, $type, $quantity);
@@ -488,6 +576,10 @@ class CartController extends Controller {
             } else {
                 $info = Products::findOne(['slug' => $product]);
                 if ($info !== null) {
+					$size = $data['size'];
+					$color = $data['color'];
+					$info->size = $size;
+					$info->color = $color;
                     $cart = new Cart();
                     $qty = $cart->removeFromCart($info, 'shop');
                     $total = $cart->getTotal();

@@ -51,10 +51,23 @@ class Cart {
         }
         $cart = $this->session->get('cart');
         if (isset($cart[$type][$product->slug])) {
-            $cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity + $quantity;
-        } else {
-            $cart[$type][$product->slug] = $product;
-            $cart[$type][$product->slug]->quantity = $quantity;
+			if($type == 'drop'){
+				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity + $quantity;
+			} else {
+				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity + $quantity;
+				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+			}
+		} else {
+			if($type == 'shop'){
+				$cart[$type][$product->slug] = $product;
+				$cart[$type][$product->slug]->quantity = $quantity;
+				$cart[$type][$product->slug]->var_qnty = [];
+				$cart[$type][$product->slug]->var_qnty[$product->color] = [];
+				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+			} else {
+				$cart[$type][$product->slug] = $product;
+				$cart[$type][$product->slug]->quantity = $quantity;
+			}
         }
         $this->session->set('cart', $cart);
         return $cart[$type][$product->slug]->quantity;
@@ -73,17 +86,32 @@ class Cart {
             $cart[$type][$product->slug]->quantity = $quantity;
             if($type == 'drop'){
                 $cart[$type][$product->slug]->desc = $product->desc;
-            }
+            } else {
+				$cart[$type][$product->slug]->var_qnty[$product->color][$product->size] = $quantity;
+			}
             $this->session->set('cart', $cart);
             return $cart[$type][$product->slug]->quantity;
         }
     }
 
     public function removeFromCart($product, $type) {
-//        $this->session = Yii::$app->session;
         $cart = $this->session->get('cart');
-        unset($cart[$type][$product->slug]);
-        $this->session->set('cart', $cart);
+		if($type == 'shop'){
+			$rmQty = $cart[$type][$product->slug]->var_qnty[$product->color][$product->size];
+		
+			if ($rmQty == $cart[$type][$product->slug]->quantity){
+				unset($cart[$type][$product->slug]);
+			} else {
+				delete $cart[$type][$product->slug]->var_qnty[$product->color][$product->size];
+				if(sizeof($cart[$type][$product->slug]->var_qnty[$product->color]) == 0){
+					delete $cart[$type][$product->slug]->var_qnty[$product->color];
+				}
+				$cart[$type][$product->slug]->quantity = $cart[$type][$product->slug]->quantity - $rmQty;
+			}
+		} else {
+			unset($cart[$type][$product->slug]);
+		}
+		$this->session->set('cart', $cart);
     }
     
     public function actionDecrease($product, $type, $quantity = 1) {
@@ -114,6 +142,12 @@ class Cart {
         }
         return $total;
     }
+	
+	public function getSubTotal() {
+		$total = $this->getTotalWithOffer();
+		$ship_cost = $this->getShippingCost();
+		return $total+$ship_cost;
+	}
 
     public function getTotalWithOffer() {
         $total = "00.00";
@@ -234,5 +268,20 @@ class Cart {
             return null;
         }
     }
+	
+	public function setShippingCost($cost){
+		$cart = $this->session->get('cart');
+		$cart['shipping_cost'] = $cost;
+		$this->session->set('cart', $cart);
+	}
+	
+	public function getShippingCost(){
+		$cart = $this->session->get('cart');
+		return $cart['shipping_cost'];
+	}
+	
+	public function resetCart(){
+		$this->session['cart'] = [];
+	}
 
 }

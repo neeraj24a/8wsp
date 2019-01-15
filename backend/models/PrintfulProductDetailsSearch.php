@@ -5,12 +5,12 @@ namespace backend\models;
 use Yii; 
 use yii\base\Model; 
 use yii\data\ActiveDataProvider; 
-use backend\models\PrintfulProducts; 
+use backend\models\PrintfulProductDetails; 
 
 /** 
  * PrintfulProductsSearch represents the model behind the search form of `backend\models\PrintfulProducts`.
  */ 
-class PrintfulProductsSearch extends PrintfulProducts 
+class PrintfulProductDetailsSearch extends PrintfulProductDetails
 { 
     /** 
      * @inheritdoc 
@@ -18,7 +18,8 @@ class PrintfulProductsSearch extends PrintfulProducts
     public function rules() 
     { 
         return [ 
-            [['id', 'printful_product_name', 'status', 'deleted', 'created_by', 'modified_by', 'date_entered', 'date_modified'], 'safe'], 
+            [['id', 'printful_product', 'color', 'size', 'status', 'deleted', 'created_by', 'modified_by', 'date_entered', 'date_modified'], 'safe'],
+            [['printful_product_id'], 'integer'], 
         ]; 
     } 
 
@@ -40,7 +41,7 @@ class PrintfulProductsSearch extends PrintfulProducts
      */ 
     public function search($params) 
     { 
-        $query = PrintfulProducts::find(); 
+        $query = PrintfulProductDetails::find(); 
 
         // add conditions that should always apply here 
 
@@ -58,12 +59,15 @@ class PrintfulProductsSearch extends PrintfulProducts
 
         // grid filtering conditions 
         $query->andFilterWhere([
+            'printful_product_id' => $this->printful_product_id,
             'date_entered' => $this->date_entered,
             'date_modified' => $this->date_modified,
         ]);
 
         $query->andFilterWhere(['like', 'id', $this->id])
-            ->andFilterWhere(['like', 'printful_product_name', $this->printful_product_name])
+            ->andFilterWhere(['like', 'printful_product', $this->printful_product])
+            ->andFilterWhere(['like', 'color', $this->color])
+            ->andFilterWhere(['like', 'size', $this->size])
             ->andFilterWhere(['like', 'status', $this->status])
             ->andFilterWhere(['like', 'deleted', $this->deleted])
             ->andFilterWhere(['like', 'created_by', $this->created_by])

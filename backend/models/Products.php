@@ -34,8 +34,8 @@ use yii\behaviors\SluggableBehavior;
  */
 class Products extends \yii\db\ActiveRecord {
     public $quantity;
-    public $product_type;
-    /**
+	public $var_qnty;
+	/**
      * @inheritdoc
      */
     public static function tableName() {
@@ -74,7 +74,7 @@ class Products extends \yii\db\ActiveRecord {
      */
     public function rules() {
         return [
-            [['product_type','sku', 'name', 'description', 'category', 'units_in_stock', 'unit_price', 'size'], 'required'],
+            [['printful_product','sku', 'name', 'description', 'category', 'units_in_stock', 'unit_price'], 'required'],
             ['main_image', 'required', 'on' => 'create'],
             [['description', 'variation', 'size', 'colors', 'weight_type'], 'string'],
             [['units_in_stock'], 'integer'],
@@ -102,7 +102,7 @@ class Products extends \yii\db\ActiveRecord {
     public function attributeLabels() {
         return [
             'id' => 'ID',
-            'product_type' => 'Product Type',
+            'printful_product' => 'Printful Product',
             'sku' => 'Sku',
             'slug' => 'Slug',
             'name' => 'Name',
