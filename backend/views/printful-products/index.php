@@ -39,9 +39,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'columns' => [
                                 ['class' => 'yii\grid\SerialColumn'],
                                 'printful_product_name',
-                                'color',
-                                'size',
-                                'printful_product_id',
                                 [
                                     'class' => 'yii\grid\ActionColumn',
                                     'header' => 'Actions',

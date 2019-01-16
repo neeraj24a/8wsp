@@ -73,7 +73,7 @@ class Cart {
         return $cart[$type][$product->slug]->quantity;
     }
     
-    public function updateCart($product, $type, $quantity){
+    public function updateVariantCart($product, $type, $quantity){
         $this->session->open();
         if($quantity == 0){
             $this->removeFromCart($product);
@@ -89,7 +89,7 @@ class Cart {
 				$drop_qty = $cart['shop'][$product->slug]->quantity;
 				return $drop_qty;
             } else {
-				$cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
+		        $cart[$type][$product->slug]->var_qnty[$product->colors][$product->size] = $quantity;
 			}
             $this->session->set('cart', $cart);
 			$qty = $this->updateCart($product);
@@ -109,7 +109,7 @@ class Cart {
 			}
 		}
 		$this->session->set('cart', $cart);
-		return $cart['shop'][$product->slug]->quantity;
+        return $cart['shop'][$product->slug]->quantity;
 	}
 
     public function removeFromCart($product, $type) {

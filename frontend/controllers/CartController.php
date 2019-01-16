@@ -501,8 +501,7 @@ class CartController extends Controller {
             $products = $data['products'];
             $array = [];
             foreach ($products as $prod) {
-				pre($prod, true);
-                $product = $prod['product'];
+				$product = $prod['product'];
                 $quantity = $prod['quantity'];
                 $type = $prod['type'];
                 if($type == 'drop'){

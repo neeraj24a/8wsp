@@ -8,7 +8,7 @@ use Yii;
  * This is the model class for table "printful_products". 
  * 
  * @property string $id
- * @property string $printful_product_name
+ * @property string $printful_product
  * @property string $color
  * @property string $size
  * @property int $printful_product_id
@@ -56,7 +56,6 @@ class PrintfulProductDetails extends \yii\db\ActiveRecord
             [['printful_product_id'], 'integer'],
             [['date_entered', 'date_modified'], 'safe'],
             [['id','printful_product', 'color', 'size', 'created_by', 'modified_by'], 'string', 'max' => 36],
-            [['printful_product_name'], 'string', 'max' => 255],
             [['status', 'deleted'], 'string', 'max' => 1],
             [['id'], 'unique'],
         ]; 
