@@ -21,6 +21,16 @@ use Printful\Exceptions\PrintfulApiException;
 use Printful\Exceptions\PrintfulException;
 use Printful\PrintfulApiClient;
 
+use PayPal\Api\Amount;
+use PayPal\Api\Details;
+use PayPal\Api\Item;
+use PayPal\Api\ItemList;
+use PayPal\Api\Payer;
+use PayPal\Api\Payment;
+use PayPal\Api\RedirectUrls;
+use PayPal\Api\Transaction;
+use PayPal\Api\ShippingAddress;
+
 class CartController extends Controller {
 
     /**
@@ -149,38 +159,119 @@ class CartController extends Controller {
         if (Yii::$app->user->isGuest){
             $guest = $cart->getGuest();
         }
-        $items = [];
+		$apiContext = new \PayPal\Rest\ApiContext(
+			new \PayPal\Auth\OAuthTokenCredential(
+				getParams('paypal_clientId'),     // ClientID
+				getParams('paypal_clientSecret')      // ClientSecret
+			)
+		);
+		$shipping_address = new ShippingAddress();
+
+		$shipping_address->setCity('City');
+		$shipping_address->setCountryCode('AR');
+		$shipping_address->setPostalCode('200');
+		$shipping_address->setLine1('Adress Line1');
+		$shipping_address->setState('State');
+		$shipping_address->setRecipientName('Recipient Name');
+        
+		$payer = new Payer();
+		$payer->setPaymentMethod("paypal");
+		
+		$item1 = new Item();
+		$item1->setName('Ground Coffee 40 oz')
+			  ->setCurrency('USD')
+			  ->setQuantity(1)
+			  ->setPrice(7.5);
+		
+		$items = [];
         if(isset($products['shop'])){
             foreach($products['shop'] as $shop){
-                $item = [];
+				$item = new Item();
+				$item->setName($shop->name)
+					->setCurrency('USD')
+					->setQuantity($shop->quantity)
+					->setPrice($shop->unit_price);
+                /*$item = [];
                 $item['name'] = $shop->name;
                 $item['price'] = $shop->unit_price;
                 $item['currency'] = 'USD';
-                $item['quantity'] = $shop->quantity;
+                $item['quantity'] = $shop->quantity;*/
                 array_push($items, $item);
             }
         }
 
         if(isset($products['drop'])){
             foreach($products['drop'] as $drop){
-                $item = [];
+				$item = new Item();
+				$item->setName($drop->title)
+					->setCurrency('USD')
+					->setQuantity($drop->quantity)
+					->setPrice($drop->price);
+                /*$item = [];
                 $item['name'] = $drop->title;
                 $item['price'] = $drop->price;
                 $item['currency'] = 'USD';
-                $item['quantity'] = $drop->quantity;
+                $item['quantity'] = $drop->quantity;*/
                 array_push($items, $item);
             }
         }
-
-        $item = [];
+		$item = new Item();
+		$item->setName('Discount')
+			->setCurrency('USD')
+			->setQuantity(1)
+			->setPrice('-'.$offerAmount);
+		
+		array_push($items, $item);
+		
+		$itemList = new ItemList();
+		$itemList->setItems(array($items));
+        $itemList->setShippingAddress($shipping_address);
+		/*$item = [];
         $item['name'] = 'Discount';
         $item['price'] = '-'.$offerAmount;
         $item['currency'] = 'USD';
         $item['quantity'] = '1';
         array_push($items, $item);
 
-        $items = json_encode($items);
-        $transaction = "[{
+        $items = json_encode($items);*/
+		$details = new Details();
+		$details->setShipping($shipping_cost)
+			->setSubtotal($totalWithOffer);
+		
+		$amount = new Amount();
+		$amount->setCurrency("USD")
+				->setTotal($sub_total)
+				->setDetails($details);
+		
+		$transaction = new Transaction();
+		$transaction->setAmount($amount)
+					->setItemList($itemList)
+					->setDescription("Payment description")
+					->setInvoiceNumber(uniqid());
+		
+		$baseUrl = domainUrl();
+		$redirectUrls = new RedirectUrls();
+		$redirectUrls->setReturnUrl("$baseUrl/cart/transact?success=true")
+					->setCancelUrl("$baseUrl/cart/transact?success=false");
+		
+		
+		$payment = new Payment();
+		$payment->setIntent("order")
+				->setPayer($payer)
+				->setRedirectUrls($redirectUrls)
+				->setTransactions(array($transaction));
+		
+		$request = clone $payment;
+		
+		try {
+			$payment->create($apiContext);
+		} catch (Exception $ex) {
+			ResultPrinter::printError("Created Payment Order Using PayPal. Please visit the URL to Approve.", "Payment", null, $request, $ex);
+			exit(1);
+		}
+		$approvalUrl = $payment->getApprovalLink();
+		//ResultPrinter::printResult("Created Payment Order Using PayPal. Please visit the URL to Approve.", "Payment", "<a href='$approvalUrl' >$approvalUrl</a>", $request, $payment);
+        /*$transaction = "[{
                           amount: {
                             total: '".$sub_total."',
                             currency: 'USD',
@@ -203,189 +294,194 @@ class CartController extends Controller {
                           item_list: {
                             items: ".$items."
                           }
-                        }]";
-        return $this->render('payment', ['addresses' => $addresses, 'offer' => $offer, 'totalWithOffer' => $totalWithOffer, 'model' => $model, 'add_model' => $add_model, 'cart' => $cart->getCart(), 'total' => $total, 'billing' => $billing, 'shipping' => $shipping, 'shipping_cost' => $shipping_cost, 'sub_total' => $sub_total, 'transaction' => $transaction, 'guest' => $guest]);
+                        }]";*/
+        return $this->render('payment', ['addresses' => $addresses, 'offer' => $offer, 'totalWithOffer' => $totalWithOffer, 'model' => $model, 'add_model' => $add_model, 'cart' => $cart->getCart(), 'total' => $total, 'billing' => $billing, 'shipping' => $shipping, 'shipping_cost' => $shipping_cost, 'sub_total' => $sub_total, 'approvalUrl' => $approvalUrl, 'guest' => $guest]);
     }
 
-    public function actionTransact() {
-        $data = Yii::$app->request->post();
-        $cart = new Cart();
-        $products = $cart->getCart();
-        $total = $cart->getTotal();
-        $totalWithOffer = $cart->getTotalWithOffer();
-        $offer = $cart->getOffer();
-        $is_guest = 0;
-        $billing = null;
-        $ship_add = null;
-        $shipping = null;
-        if(Yii::$app->user->id){
-            $user = Yii::$app->user->id;
-        } else {
-            $is_guest = 1;
-            $email = $cart->getGuest();
-            $guest = Guests::find()->where(['email' => $email])->one();
-            if($guest === null){
-                $addGuest = new Guests;
-                $addGuest->email = $email;
-                $addGuest->save(false);
-                $user = $addGuest->id;
-            } else {
-                $user = $guest->id;
-            }
-        }
-        
-        $bill_add = $cart->billingAddress();
-        $ship_add = $cart->shippingAddress();
-        if(Yii::$app->user->id){
-            $billing = Address::findOne(['user' => $user,'address_type' => 'billing','first_name' => $bill_add['first_name'],'last_name' => $bill_add['last_name'],'address_line_1' => $bill_add['address_line_1'],'address_line_2' => $bill_add['address_line_2'],'city' => $bill_add['city'],'state' => $bill_add['state'],'zip' => $bill_add['zip'],'contact' => $bill_add['contact']]);
-        }
-        $bill_id = '';
-        if($billing === null){
-            $model = new Address;
-            $model->first_name = $bill_add['first_name'];
-            $model->last_name = $bill_add['last_name'];
-            $model->address_line_1 = $bill_add['address_line_1'];
-            $model->address_line_2 = $bill_add['address_line_2'];
-            $model->city = $bill_add['city'];
-            $model->state = $bill_add['state'];
-            $model->country = 'USA';
-            $model->zip = $bill_add['zip'];
-            $model->contact = $bill_add['contact'];
-            $model->is_default = 1;
-            $model->address_type = 'billing';
-            $model->save(false);
-            $bill_id = $model->id;
-        } else {
-            $bill_id = $billing->id;
-            if($billing->is_default != $bill_add['is_default'] && $bill_add['is_default'] == 1){
-                $billing->is_default = 1;
-                $billing->save(false);
-            }
-        }
-        $ship_id = '';
-        if($ship_add != null){
-            if(Yii::$app->user->id){
-                $shipping = Address::findOne(['user' => $user,'address_type' => 'shipping','first_name' => $ship_add['ship_first_name'],'last_name' => $ship_add['ship_last_name'],'address_line_1' => $ship_add['ship_address_line_1'],'address_line_2' => $ship_add['ship_address_line_2'],'city' => $ship_add['ship_city'],'state' => $ship_add['ship_state'],'zip' => $ship_add['ship_zip'],'contact' => $ship_add['ship_contact']]);
-            }
-            if($shipping === null){
-                $sh_model = new Address;
-                $sh_model->first_name = $ship_add['first_name'];
-                $sh_model->last_name = $ship_add['last_name'];
-                $sh_model->address_line_1 = $ship_add['address_line_1'];
-                $sh_model->address_line_2 = $ship_add['address_line_2'];
-                $sh_model->city = $ship_add['city'];
-                $sh_model->state = $ship_add['state'];
-                $sh_model->country = 'USA';
-                $sh_model->zip = $ship_add['zip'];
-                $sh_model->contact = $ship_add['contact'];
-                $sh_model->is_default = 1;
-                $sh_model->address_type = 'shipping';
-                $sh_model->save(false);
-                $ship_id = $sh_model->id;
-            } else {
-                $ship_id = $shipping->id;
-                if($shipping->is_default != $ship_add['is_default'] && $ship_add['is_default'] == 1){
-                    $shipping->is_default = 1;
-                    $shipping->save(false);
-                }
-            }
-        }
-
-
-        $order = new Orders;
-        $order->is_guest = $is_guest;
-        $order->customer = $user;
-        $order->order_number = getOrderNum();
-        $order->order_amount = $totalWithOffer;
-        $order->payment_method = 'paypal';
-        $order->transaction_id = getOrderNum();
-        $order->order_date = date("Y-m-d H:i:s");
-        $order->is_paid = 1;
-        $order->is_shipped = 0;
-        $order->freight = 0;
-        $order->shipping_address = $ship_id;
-        $order->billing_address = $bill_id;
-        $order->payment_status = 'success';
-        $order->payment_details = json_encode($data);
-        $order->note = '';
-        $order->save(false);
-
-        if(isset($products['shop'])){
-            foreach ($products['shop'] as $info) {
-                $detail = new OrderDetails;
-                $detail->order = $order->id;
-                $detail->product = $info->id;
-                $detail->product_price = $info->unit_price;
-                $detail->purchased_price = number_format($info->unit_price - ($offer/100 * $info->unit_price), 2);
-                $detail->quantity = $info->quantity;
-				$detail->quantity_details = serialize($info->var_qnty);
-				$detail->save(false);
-            }
-        }
-
-        if(isset($products['drop'])){
-            foreach ($products['drop'] as $info) {
-                $detail = new OrderDetails;
-                $detail->order = $order->id;
-                $detail->product = $info->id;
-                $detail->product_price = $info->price;
-                $detail->purchased_price = number_format($info->price - ($offer/100 * $info->price), 2);
-                $detail->quantity = $info->quantity;
-                $detail->description = $info->desc;
-                $detail->save(false);
-            }
-        }
-		
-		$pf = new PrintfulApiClient('ciac7wnf-7cvl-wa20:io6q-8d0qfxlnvf42');
-        $request = [];
-		$request['recipient']  = ['address1' => $add['ship_address_line_1'],'city' => $add['ship_city'],'country_code' => 'US', 'state_code' => $add['ship_state'], 'zip' => $add['ship_zip']];
-		$cart = new Cart();
-		if ($cart->getCart() == NULL) {
-            return $this->redirect(['/cart']);
-        }
-        $products = $cart->getCart();
-		$items = [];
-		if(isset($products['shop'])){
-            foreach($products['shop'] as $shop){
-                $item = [];
-				$url = Url::base(true);
-				$img = str_replace('/assets', $url./assets, $shop->main_image);
-				foreach($shop->var_qnty as $key => $val){
-					foreach($val as $k => $v){
-						$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
-						$item['quantity'] = $shop->quantity;
-						$item['variant_id'] = $p;
-						$item['files'] = [
-							[
-								'url': $img
-							]
-						];
-						array_push($items, $item);
+    public function actionTransact($success) {
+		if($success == 'false'){
+			return $this->render('error');
+		} else if ($success == 'true'){
+			$cart = new Cart();
+			if ($cart->getCart() == NULL) {
+				return $this->redirect(['/cart']);
+			}
+			
+			$data = Yii::$app->request->post();
+			$cart = new Cart();
+			$products = $cart->getCart();
+			$total = $cart->getTotal();
+			$totalWithOffer = $cart->getTotalWithOffer();
+			$offer = $cart->getOffer();
+			$is_guest = 0;
+			$billing = null;
+			$ship_add = null;
+			$shipping = null;
+			if(Yii::$app->user->id){
+				$user = Yii::$app->user->id;
+			} else {
+				$is_guest = 1;
+				$email = $cart->getGuest();
+				$guest = Guests::find()->where(['email' => $email])->one();
+				if($guest === null){
+					$addGuest = new Guests;
+					$addGuest->email = $email;
+					$addGuest->save(false);
+					$user = $addGuest->id;
+				} else {
+					$user = $guest->id;
+				}
+			}
+			
+			$bill_add = $cart->billingAddress();
+			$ship_add = $cart->shippingAddress();
+			if(Yii::$app->user->id){
+				$billing = Address::findOne(['user' => $user,'address_type' => 'billing','first_name' => $bill_add['first_name'],'last_name' => $bill_add['last_name'],'address_line_1' => $bill_add['address_line_1'],'address_line_2' => $bill_add['address_line_2'],'city' => $bill_add['city'],'state' => $bill_add['state'],'zip' => $bill_add['zip'],'contact' => $bill_add['contact']]);
+			}
+			$bill_id = '';
+			if($billing === null){
+				$model = new Address;
+				$model->first_name = $bill_add['first_name'];
+				$model->last_name = $bill_add['last_name'];
+				$model->address_line_1 = $bill_add['address_line_1'];
+				$model->address_line_2 = $bill_add['address_line_2'];
+				$model->city = $bill_add['city'];
+				$model->state = $bill_add['state'];
+				$model->country = 'USA';
+				$model->zip = $bill_add['zip'];
+				$model->contact = $bill_add['contact'];
+				$model->is_default = 1;
+				$model->address_type = 'billing';
+				$model->save(false);
+				$bill_id = $model->id;
+			} else {
+				$bill_id = $billing->id;
+				if($billing->is_default != $bill_add['is_default'] && $bill_add['is_default'] == 1){
+					$billing->is_default = 1;
+					$billing->save(false);
+				}
+			}
+			$ship_id = '';
+			if($ship_add != null){
+				if(Yii::$app->user->id){
+					$shipping = Address::findOne(['user' => $user,'address_type' => 'shipping','first_name' => $ship_add['ship_first_name'],'last_name' => $ship_add['ship_last_name'],'address_line_1' => $ship_add['ship_address_line_1'],'address_line_2' => $ship_add['ship_address_line_2'],'city' => $ship_add['ship_city'],'state' => $ship_add['ship_state'],'zip' => $ship_add['ship_zip'],'contact' => $ship_add['ship_contact']]);
+				}
+				if($shipping === null){
+					$sh_model = new Address;
+					$sh_model->first_name = $ship_add['first_name'];
+					$sh_model->last_name = $ship_add['last_name'];
+					$sh_model->address_line_1 = $ship_add['address_line_1'];
+					$sh_model->address_line_2 = $ship_add['address_line_2'];
+					$sh_model->city = $ship_add['city'];
+					$sh_model->state = $ship_add['state'];
+					$sh_model->country = 'USA';
+					$sh_model->zip = $ship_add['zip'];
+					$sh_model->contact = $ship_add['contact'];
+					$sh_model->is_default = 1;
+					$sh_model->address_type = 'shipping';
+					$sh_model->save(false);
+					$ship_id = $sh_model->id;
+				} else {
+					$ship_id = $shipping->id;
+					if($shipping->is_default != $ship_add['is_default'] && $ship_add['is_default'] == 1){
+						$shipping->is_default = 1;
+						$shipping->save(false);
 					}
 				}
 			}
-        }
-		
-		$request['items'] = $items;
 
-        try {
-            // Calculate shipping rates for an order
-            $response = $pf->post('shipping/rates', $request);
-			pre($response, true);
-            $ship_cost = $response['rate'];
-			$cart->setShippingCost = $ship_cost;
-            $this->redirect(['/cart/payment']);
-        } catch (PrintfulApiException $e) { //API response status code was not successful
-            echo 'Printful API Exception: ' . $e->getCode() . ' ' . $e->getMessage();
-        } catch (PrintfulException $e) { //API call failed
-            echo 'Printful Exception: ' . $e->getMessage();
-            var_export($pf->getLastResponseRaw());
-        }
-		
-		
-        $res = [];
-        $res['order'] = $order->order_number;
-        echo json_encode($res, true);
+
+			$order = new Orders;
+			$order->is_guest = $is_guest;
+			$order->customer = $user;
+			$order->order_number = getOrderNum();
+			$order->order_amount = $totalWithOffer;
+			$order->payment_method = 'paypal';
+			$order->transaction_id = getOrderNum();
+			$order->order_date = date("Y-m-d H:i:s");
+			$order->is_paid = 1;
+			$order->is_shipped = 0;
+			$order->freight = 0;
+			$order->shipping_address = $ship_id;
+			$order->billing_address = $bill_id;
+			$order->payment_status = 'success';
+			$order->payment_details = json_encode($data);
+			$order->note = '';
+			$order->save(false);
+
+			if(isset($products['shop'])){
+				foreach ($products['shop'] as $info) {
+					$detail = new OrderDetails;
+					$detail->order = $order->id;
+					$detail->product = $info->id;
+					$detail->product_price = $info->unit_price;
+					$detail->purchased_price = number_format($info->unit_price - ($offer/100 * $info->unit_price), 2);
+					$detail->quantity = $info->quantity;
+					$detail->quantity_details = serialize($info->var_qnty);
+					$detail->save(false);
+				}
+			}
+
+			if(isset($products['drop'])){
+				foreach ($products['drop'] as $info) {
+					$detail = new OrderDetails;
+					$detail->order = $order->id;
+					$detail->product = $info->id;
+					$detail->product_price = $info->price;
+					$detail->purchased_price = number_format($info->price - ($offer/100 * $info->price), 2);
+					$detail->quantity = $info->quantity;
+					$detail->description = $info->desc;
+					$detail->save(false);
+				}
+			}
+			
+			$pf = new PrintfulApiClient('ciac7wnf-7cvl-wa20:io6q-8d0qfxlnvf42');
+			$request = [];
+			$request['recipient']  = ['address1' => $add['ship_address_line_1'],'city' => $add['ship_city'],'country_code' => 'US', 'state_code' => $add['ship_state'], 'zip' => $add['ship_zip']];
+			$cart = new Cart();
+			if ($cart->getCart() == NULL) {
+				return $this->redirect(['/cart']);
+			}
+			$products = $cart->getCart();
+			$items = [];
+			if(isset($products['shop'])){
+				foreach($products['shop'] as $shop){
+					$item = [];
+					$url = Url::base(true);
+					$img = str_replace('/assets', $url./assets, $shop->main_image);
+					foreach($shop->var_qnty as $key => $val){
+						foreach($val as $k => $v){
+							$p = PrintfulProductDetails::find()->where['and', "printful_product = $shop->printful_product","color = $key", "size = $k"];
+							$item['quantity'] = $shop->quantity;
+							$item['variant_id'] = $p;
+							$item['files'] = [
+								[
+									'url': $img
+								]
+							];
+							array_push($items, $item);
+						}
+					}
+				}
+			}
+			
+			$request['items'] = $items;
+
+			try {
+				// Calculate shipping rates for an order
+				$response = $pf->post('shipping/rates', $request);
+				pre($response, true);
+				$ship_cost = $response['rate'];
+				$cart->setShippingCost = $ship_cost;
+				$this->redirect(['/cart/payment']);
+			} catch (PrintfulApiException $e) { //API response status code was not successful
+				echo 'Printful API Exception: ' . $e->getCode() . ' ' . $e->getMessage();
+			} catch (PrintfulException $e) { //API call failed
+				echo 'Printful Exception: ' . $e->getMessage();
+				var_export($pf->getLastResponseRaw());
+			}
+			return $this->redirect(['/cart',['order' => $order->order_number]]);
+		}
     }
 
     public function actionSuccess($order) {

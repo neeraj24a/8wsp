@@ -17,11 +17,65 @@ $this->title = "Checkout";
                 <a class="logo logo--center" href="https://www.8thwonderpromos.com">
                     <img alt="8thwonderpromos" class="logo__image logo__image--medium" src="">
                 </a>
-                <h1 class="visually-hidden">
-                    Customer information
-                </h1>
+                <div class="section__header">
+					<div class="layout-flex layout-flex--tight-vertical layout-flex--loose-horizontal layout-flex--wrap">
+						<h2 class="section__title layout-flex__item layout-flex__item--stretch" id="main-header" tabindex="-1">
+							Contact information
+						</h2>
+					</div>
+				</div>
             </div>
+			<?php if (Yii::$app->user->isGuest): ?>
             <div class="main__content">
+				<?php
+					$lform = ActiveForm::begin([
+								'id' => 'login-form',
+								'action' => Yii::$app->homeUrl.'login',
+								'options' => ['class' => 'd-block', 'autocomplete' => 'off'],
+					]);
+				?>
+					<div class="step" data-step="contact_information">
+						<div class="step__sections">
+							<div class="section section--contact-information">
+								<div class="section__content">
+                                	<div class="one-whole">
+										<div class="two-fifths pull-left">
+											<div class="fieldset">
+												<div class="field field--required">
+													<div class="field__input-wrapper">
+														<?php echo $lform->field($model, 'username', ['template' => "{label}\n{input}\n{hint}\n{error}",'labelOptions' => [ 'class' => 'field__label field__label--visible' ]])->textInput(['class' => 'field__input', 'placeholder' => 'Username', 'autocomplete' => 'off']); ?>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="two-fifths pull-left">
+											<div class="fieldset">
+												<div class="field field--required">
+													<div class="field__input-wrapper">
+														<?php echo $lform->field($model, 'password', ['labelOptions' => [ 'class' => 'field__label field__label--visible' ]])->passwordInput(['class' => 'field__input', 'placeholder' => 'Password', 'autocomplete' => 'off']); ?>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="one-fifth pull-left">
+											<div class="fieldset">
+												<div class="field field--required">
+													<div class="field__input-wrapper">
+														<label class="field__label field__label--visible">&nbsp;</label>
+														<?= Html::submitButton('Login', ['class' => 'step__footer__continue-btn btn ', 'name' => 'login-button']) ?>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				<?php ActiveForm::end(); ?>
+			</div>
+			<?php endif; ?>
+			<div class="main__content">
                 <?php
                     $form = ActiveForm::begin([
                         'id' => 'address-form',
@@ -31,57 +85,6 @@ $this->title = "Checkout";
                 ?>
                 <div class="step" data-step="contact_information">
                     <div class="step__sections">
-                        <div class="section section--contact-information">
-                            <div class="section__header">
-                                <div class="layout-flex layout-flex--tight-vertical layout-flex--loose-horizontal layout-flex--wrap">
-                                    <h2 class="section__title layout-flex__item layout-flex__item--stretch" id="main-header" tabindex="-1">
-                                        Contact information
-                                    </h2>
-                                </div>
-                            </div>
-                            <?php if (Yii::$app->user->isGuest): ?>
-                            <div class="section__content">
-                                <?php
-                                $lform = ActiveForm::begin([
-                                            'id' => 'login-form',
-                                            'action' => Yii::$app->homeUrl.'login',
-                                            'options' => ['class' => 'd-block', 'autocomplete' => 'off'],
-                                ]);
-                                ?>
-                                <div class="one-whole">
-                                    <div class="two-fifths pull-left">
-                                        <div class="fieldset">
-                                            <div class="field field--required">
-                                                <div class="field__input-wrapper">
-                                                    <?php echo $lform->field($model, 'username', ['template' => "{label}\n{input}\n{hint}\n{error}",'labelOptions' => [ 'class' => 'field__label field__label--visible' ]])->textInput(['class' => 'field__input', 'placeholder' => 'Username', 'autocomplete' => 'off']); ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="two-fifths pull-left">
-                                        <div class="fieldset">
-                                            <div class="field field--required">
-                                                <div class="field__input-wrapper">
-                                                    <?php echo $lform->field($model, 'password', ['labelOptions' => [ 'class' => 'field__label field__label--visible' ]])->passwordInput(['class' => 'field__input', 'placeholder' => 'Password', 'autocomplete' => 'off']); ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="one-fifth pull-left">
-                                        <div class="fieldset">
-                                            <div class="field field--required">
-                                                <div class="field__input-wrapper">
-                                                    <label class="field__label field__label--visible">&nbsp;</label>
-                                                    <?= Html::submitButton('Login', ['class' => 'step__footer__continue-btn btn ', 'name' => 'login-button']) ?>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php ActiveForm::end(); ?>
-							</div>
-                            <?php endif; ?> 
-                        </div>
                         <?php if (Yii::$app->user->isGuest): ?>
                         <div class="section section--shipping-address">
                             <div class="section__header">
@@ -288,7 +291,7 @@ $this->title = "Checkout";
                                 <div class="fieldset">
                                     <div class="field field--required">
                                         <div class="field__input-wrapper">
-                                            <input type="checkbox" class="field__input" id="ship-bill">
+                                            <input type="checkbox" class="chkbox" id="ship-bill">
                                             <label for="login-6">Shipping same as billing address?</label>
                                         </div>
                                     </div>
