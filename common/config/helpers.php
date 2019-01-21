@@ -18,6 +18,10 @@ function domainUrl() {
     return 'http://' . $_SERVER['SERVER_NAME'] . Yii::app()->baseUrl;
 }
 
+function getParams($key) {
+	return Yii::app()->params[$key];
+}
+
 function getUtubeId($link) {
     $video_id = explode("?v=", $link); // For videos like http://www.youtube.com/watch?v=...
     if (empty($video_id[1]))

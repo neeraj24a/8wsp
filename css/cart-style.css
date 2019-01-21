@@ -6624,3 +6624,8 @@ td:last-child,th:last-child {
     top: -0.65em;
     padding: 0 0.55em
 }
+input.chkbox {
+    -webkit-appearance: checkbox;
+	-moz-appearance: checkbox;
+    appearance: checkbox;
+}

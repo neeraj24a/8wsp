@@ -52,14 +52,15 @@ class AddressForm extends Model{
                 [['first_name', 'guest_email', 'last_name', 'address_line_1', 'landmark', 'city', 'state', 'country', 'zip', 'contact','ship_first_name', 'ship_last_name', 'ship_address_line_1', 'ship_landmark', 'ship_city', 'ship_contact', 'ship_state', 'ship_country', 'ship_zip'], 'required'],
                 // email has to be a valid email address
                 [['guest_email'], 'email'],
-                [['zip','ship_zip','contact','contact_zip'], 'integer'],
+				[['contact, ship_contact', 'pattern' => '/^[0-9]$/']],
+                [['zip','ship_zip'], 'integer'],
             ];
         } else {
             return [
             // name, email, subject and body are required
                 [['first_name', 'last_name', 'address_line_1', 'landmark', 'city', 'state', 'country', 'zip', 'contact','ship_first_name', 'ship_last_name', 'ship_address_line_1', 'ship_landmark', 'ship_city', 'ship_contact', 'ship_state', 'ship_country', 'ship_zip'], 'required'],
-                // email has to be a valid email address
-                [['zip','ship_zip','contact','contact_zip'], 'integer'],
+                [['contact, ship_contact', 'pattern' => '/^[0-9]$/']],
+                [['zip','ship_zip'], 'integer'],
             ];
         }
         
@@ -79,7 +80,7 @@ class AddressForm extends Model{
             'state' => 'State',
             'country' => 'Country',
             'zip' => 'Zip',
-            'contact' => 'Contact',
+            'contact' => 'Phone Number',
             'ship_first_name' => 'First Name',
             'ship_last_name' => 'Last Name',
             'ship_address_line_1' => 'Address Line 1',
@@ -88,7 +89,7 @@ class AddressForm extends Model{
             'ship_state' => 'State',
             'ship_country' => 'Country',
             'ship_zip' => 'Zip',
-            'ship_contact' => 'Contact',
+            'ship_contact' => 'Phone Number',
             'is_guest' => 'Guest',
             'guest_email' => 'Guest Email'
         ];

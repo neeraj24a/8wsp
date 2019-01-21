@@ -11,7 +11,20 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
   		<meta itemprop="image" content="<?php echo $model->main_image; ?>">
   		<div class="grid product-single">
     		<div class="grid__item product-single__photos medium-up--one-half">
-		        <div class="product-image-wrapper product-single__photo-wrapper">
+				<div class="xzoom-container">
+					<div class="product-image-wrapper product-single__photo-wrapper">
+						<img class="xzoom4" id="xzoom-fancy" src="<?php echo $model->main_image; ?>" xoriginal="<?php echo $model->main_image; ?>" />
+					</div>
+					<noscript>
+						<img src="<?php echo $model->main_image; ?>" alt="<?php echo $model->name; ?>" id="FeaturedImage-product-template" class="product-featured-img" style="max-width: 530px;">
+					</noscript>
+					<div class="xzoom-thumbs thumbnails-wrapper">
+						<a href="<?php echo $model->main_image; ?>">
+							<img class="xzoom-gallery4" width="80" src="<?php echo $model->main_image; ?>" xpreview="<?php echo $model->main_image; ?>" title="The description goes here">
+						</a>
+					</div>
+				</div>
+		        <!--https://payalord.github.io/xZoom/<div class="product-image-wrapper product-single__photo-wrapper">
 		          	<div style="padding-top: 100%; position: relative; overflow: hidden;" class="product-single__photo js-zoom-enabled product-single__photo--has-thumbnails" data-image-id="3919315632151" data-zoom="">
 		            <img class="product-image feature-row__image product-featured-img" src="<?php echo $model->main_image; ?>" data-widths="[180, 360, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]" data-aspectratio="1.0" data-sizes="auto" alt="<?php echo $model->name; ?>" data-srcset="" class="zoomImg" style="position: absolute; border: none; max-width: none; max-height: none;">
 		        	</div>
@@ -27,7 +40,7 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
                 			</a>
               			</li>
               		</ul>
-        		</div>
+        		</div>-->
     		</div>
     		<div class="grid__item medium-up--one-half">
       			<div class="product-single__meta">
@@ -105,7 +118,53 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
 $this->registerJs(
     "(function(doc){var addEvent='addEventListener',type='gesturestart',qsa='querySelectorAll',scales=[1,1],meta=qsa in doc?doc[qsa]('meta[name=viewport]'):[];function fix(){meta.content='width=device-width,minimum-scale='+scales[0]+',maximum-scale='+scales[1];doc.removeEventListener(type,fix,true);}if((meta=meta[meta.length-1])&&addEvent in doc){fix();scales=[.25,1.6];doc[addEvent](type,fix,true);}}(document));
     $(document).ready(function(){
-    	$( 'audio' ).audioPlayer();
+		$('.xzoom4, .xzoom-gallery4').xzoom({tint: '#006699', Xoffset: 15});
+    	var isTouchSupported = 'ontouchstart' in window;
+		if (isTouchSupported) {
+			var xzoom = $('.xzoom').data('xzoom');
+                xzoom.eventunbind();
+			$(this).hammer().on('tap', function(event) {
+                event.pageX = event.gesture.center.pageX;
+                event.pageY = event.gesture.center.pageY;
+                var s = 1, ls;
+
+                xzoom.eventmove = function(element) {
+                    element.hammer().on('drag', function(event) {
+                        event.pageX = event.gesture.center.pageX;
+                        event.pageY = event.gesture.center.pageY;
+                        xzoom.movezoom(event);
+                        event.gesture.preventDefault();
+                    });
+                }
+
+                var counter = 0;
+                xzoom.eventclick = function(element) {
+                    element.hammer().on('tap', function() {
+                        counter++;
+                        if (counter == 1) setTimeout(openfancy,300);
+                        event.gesture.preventDefault();
+                    });
+                }
+
+                function openfancy() {
+                    if (counter == 2) {
+                        xzoom.closezoom();
+                        $.fancybox.open(xzoom.gallery().cgallery);
+                    } else {
+                        xzoom.closezoom();
+                    }
+                    counter = 0;
+                }
+				xzoom.openzoom(event);
+            });
+		} else {
+			$('#xzoom-fancy').bind('click', function(event) {
+                var xzoom = $(this).data('xzoom');
+                xzoom.closezoom();
+                $.fancybox.open(xzoom.gallery().cgallery, {padding: 0, helpers: {overlay: {locked: false}}});
+                event.preventDefault();
+            });
+		}
         $('#product-to-cart').on('beforeSubmit', function(e){
         	e.preventDefault();
     		var form = $(this);

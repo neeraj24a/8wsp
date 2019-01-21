@@ -135,7 +135,11 @@ $this->title = "Checkout";
                         </div> 
                     </div>
                     <div class="step__footer">
-                        <div id="paypal-button" class="step__footer__continue-btn"></div>
+                        <div id="paypal-button" class="step__footer__continue-btn">
+							<a href="$approvalUrl">
+								<img src="<?php echo Url::toRoute('/img/paypal.png'); ?>" alt="Paypal Checkout" />
+							</a>
+						</div>
                         <a class="step__footer__previous-link" href="<?php echo Url::toRoute('/cart'); ?>">
                             <svg focusable="false" aria-hidden="true" class="icon-svg icon-svg--color-accent icon-svg--size-10 previous-link__icon" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10">
                                 <path d="M8 1L7 0 3 4 2 5l1 1 4 4 1-1-4-4"></path>
@@ -397,7 +401,7 @@ $this->title = "Checkout";
 <script>
     var transactionDetails = <?php echo $transaction; ?>
 </script>
-<?php $this->registerJs(<<< EOT_JS
+<!--?php $this->registerJs(<<< EOT_JS
 $(document).ready(function(){
     paypal.Button.render({
         // Configure environment
@@ -450,4 +454,4 @@ $(document).ready(function(){
 }); 
 EOT_JS
 );
-?>
+?>-->

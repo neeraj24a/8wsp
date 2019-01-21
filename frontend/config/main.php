@@ -1,5 +1,5 @@
 <?php
-
+require __DIR__ . '/../../vendor/PayPal-PHP-SDK/autoload.php';
 require __DIR__ . '/../../common/config/helpers.php';
 require __DIR__ . '/../../vendor/printful/autoload.php';
 $params = array_merge(
