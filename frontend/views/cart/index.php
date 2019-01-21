@@ -59,7 +59,7 @@ $this->title = "8thwonderpromos Cart";
 											Size: <?php echo $k; ?> Color: <?php echo $key; ?><br>
 										</div>
 										<p class="small--hide">
-											<a href="/cart/change?line=1&amp;quantity=0" class="btn btn--small btn--secondary cart__remove">Remove</a>
+											<a href="javascript:void(0);" class="btn btn--small btn--secondary cart__remove removeFromCart" data-slug="<?php echo $info->slug; ?>" data-type="shop" data-size="<?php echo $k; ?>" data-color="<?php echo $key; ?>">Remove</a>
 										</p>
 									</td>
 									<td class="cart__price-wrapper cart-flex-item">

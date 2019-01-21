@@ -401,9 +401,9 @@ $this->title = "Checkout";
 $(document).ready(function(){
     paypal.Button.render({
         // Configure environment
-        env: 'sandbox',
+        env: 'production',
         client: {
-            sandbox: 'Aa59mhDWax3KqdDOmPtnUZ5avPCB8O4PVx6kU-oLkObjnUh9Jx_qySICwdnC',
+            // sandbox: 'Aa59mhDWax3KqdDOmPtnUZ5avPCB8O4PVx6kU-oLkObjnUh9Jx_qySICwdnC',
             production: 'ARoVjwXgdOJ2FfrZKykYoQaK8KD7uAQprWYeVCg9Zx3KxR22JF2e_c6_ZyVgZMkEG2nlSNvpt41AwRYr'
         },
         // Customize button (optional)
