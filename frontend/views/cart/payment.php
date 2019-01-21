@@ -21,7 +21,7 @@ $this->title = "Checkout";
         ?>
         <div class="main" role="main">
             <div class="main__header">              
-                <a class="logo logo--center" href="https://birbbrand.com">
+                <a class="logo logo--center" href="https://www.8thwonderpromos.com">
                     <img alt="8thwonderpromos" class="logo__image logo__image--medium" src="">
                 </a>
                 <h1 class="visually-hidden">
@@ -285,14 +285,14 @@ $this->title = "Checkout";
                                     </tr>
                                 </thead>
                                 <tbody class="total-line-table__tbody">
-                                    <tr class="total-line total-line--subtotal">
+                                    <!--<tr class="total-line total-line--subtotal">
                                         <th class="total-line__name" scope="row">Subtotal</th>
                                         <td class="total-line__price">
                                             <span class="order-summary__emphasis">
                                                 $<?php echo $total; ?>
                                             </span>
                                         </td>
-                                    </tr>
+                                    </tr>-->
                                     <tr class="total-line total-line--shipping">
                                         <th class="total-line__name">Shipping</th>
                                         <td class="total-line__price">
@@ -316,7 +316,7 @@ $this->title = "Checkout";
                                         <td class="total-line__price payment-due">
                                             <span class="payment-due__currency">USD</span>
                                             <span class="payment-due__price">
-                                                $<?php echo $totalWithOffer; ?>
+                                                $<?php echo $sub_total; ?>
                                             </span>
                                         </td>
                                     </tr>
@@ -408,7 +408,7 @@ $(document).ready(function(){
         env: 'sandbox',
         client: {
             sandbox: 'Aa59mhDWax3KqdDOmPtnUZ5avPCB8O4PVx6kU-oLkObjnUh9Jx_qySICwdnC',
-            // production: 'ARoVjwXgdOJ2FfrZKykYoQaK8KD7uAQprWYeVCg9Zx3KxR22JF2e_c6_ZyVgZMkEG2nlSNvpt41AwRYr'
+            production: 'ARoVjwXgdOJ2FfrZKykYoQaK8KD7uAQprWYeVCg9Zx3KxR22JF2e_c6_ZyVgZMkEG2nlSNvpt41AwRYr'
         },
         // Customize button (optional)
         locale: 'en_US',

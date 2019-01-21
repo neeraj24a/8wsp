@@ -17,26 +17,9 @@ use yii\widgets\ActiveForm;
         <?php $form = ActiveForm::begin(); ?>
         <div class="row">
             <div class="col-lg-12">
-                <div class="col-lg-6">
+                <div class="col-lg-12">
                     <div class="form-group">
                         <?= $form->field($model, 'printful_product_name')->textInput(['maxlength' => true,'class' => 'form-control']) ?>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <?= $form->field($model, 'color')->textInput(['maxlength' => true,'class' => 'form-control']) ?>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <?= $form->field($model, 'size')->textInput(['maxlength' => true,'class' => 'form-control']) ?>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="form-group">
-                        <?= $form->field($model, 'printful_product_id')->textInput(['maxlength' => true,'class' => 'form-control']) ?>
                     </div>
                 </div>
             </div>

@@ -93,7 +93,7 @@ use yii\widgets\ActiveForm;
             <div class="col-lg-12">
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <?= $form->field($model, 'weight_type')->dropDownList([ 'pound' => 'Pound', 'gram' => 'Gram', 'kg' => 'Kg', 'ounce' => 'Ounce', ], ['prompt' => 'Select','class' => 'form-control']) ?>
+                        <?= $form->field($model, 'weight_type')->dropDownList([ 'pound' => 'Pound', 'gram' => 'Gram', 'kg' => 'Kg', 'ounce' => 'Ounce', ], ['class' => 'form-control']) ?>
                     </div>
                 </div>
                 <div class="col-lg-6">
@@ -110,7 +110,7 @@ use yii\widgets\ActiveForm;
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                        <?= $form->field($model, 'discount')->dropDownList(getParam('boolean'),['prompt' => 'Select','class' => 'form-control']) ?>
+                        <?= $form->field($model, 'discount')->dropDownList(getParam('boolean'),['class' => 'form-control']) ?>
                     </div>
                 </div>
             </div>

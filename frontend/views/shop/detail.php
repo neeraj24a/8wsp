@@ -64,13 +64,13 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
                 					Size
               					</label>
               					<select class="single-option-selector single-option-selector-product-template product-form__input" name="size">
-                  					<option value="XS" selected="selected">XS</option>
-                  					<option value="S">S</option>
-									<option value="M">M</option>
-                					<option value="L">L</option>
-									<option value="XL">XL</option>
-									<option value="XXL">XXL</option>
-                				</select>
+                  					<?php $sizes = backend\models\PrintfulProductDetails::find()->where(['printful_product' => $model->printful_product])->groupBy([
+                                            'size'])->all(); 
+                            foreach($sizes as $size):
+                            ?>
+                            <option value="<?php echo $size->size; ?>"><?php echo $size->size; ?></option>
+                            <?php endforeach; ?>
+                  			</select>
             				</div>
                     <div class="selector-wrapper product-form__item">
                         <label for="SingleOptionSelector-0">
@@ -78,7 +78,7 @@ $this->title = "8thwonderpromos Shop: ".$model->name;
                         </label>
                         <select class="single-option-selector single-option-selector-product-template product-form__input" name="color">
                           <?php
-                            $variants = backend\models\PrintfulProductDetails::find()->where(['printful_product' , $model->printful_product])->groupBy([
+                            $variants = backend\models\PrintfulProductDetails::find()->where(['printful_product' => $model->printful_product])->groupBy([
                                             'color'])->all();
                             foreach($variants as $variant):
                           ?>

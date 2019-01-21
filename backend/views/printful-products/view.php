@@ -35,9 +35,6 @@ $this->params['breadcrumbs'][] = $this->title;
                             'model' => $model,
                             'attributes' => [
                                 'printful_product_name',
-                                'color',
-                                'size',
-                                'printful_product_id',
                             ],
                         ])
                         ?>
