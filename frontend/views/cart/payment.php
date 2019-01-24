@@ -136,7 +136,7 @@ $this->title = "Checkout";
                     </div>
                     <div class="step__footer">
                         <div id="paypal-button" class="step__footer__continue-btn">
-							<a href="$approvalUrl">
+							<a href="<?php echo $approvalUrl; ?>">
 								<img src="<?php echo Url::toRoute('/img/paypal.png'); ?>" alt="Paypal Checkout" />
 							</a>
 						</div>
@@ -398,9 +398,9 @@ $this->title = "Checkout";
         <?php ActiveForm::end(); ?>
     </div>
 </div>
-<script>
-    var transactionDetails = <?php echo $transaction; ?>
-</script>
+<!--<script>
+    var transactionDetails = <?php //echo $transaction; ?>
+</script>-->
 <!--?php $this->registerJs(<<< EOT_JS
 $(document).ready(function(){
     paypal.Button.render({

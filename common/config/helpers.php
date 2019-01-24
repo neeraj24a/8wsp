@@ -15,11 +15,11 @@ function base_url() {
 }
 
 function domainUrl() {
-    return 'http://' . $_SERVER['SERVER_NAME'] . Yii::app()->baseUrl;
+    return Url::base(true);
 }
 
 function getParams($key) {
-	return Yii::app()->params[$key];
+	return Yii::$app->params[$key];
 }
 
 function getUtubeId($link) {

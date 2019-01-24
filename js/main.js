@@ -16,4 +16,32 @@ $(document).ready(function(){
             $("#CartCount").html(data.quantity);
         }
     });
+	
+	$("#contact_form").submit(function(e){
+		e.preventDefault();
+		$('#email-error').html("");
+		var email = $("#Email").val();
+		var pattern = /^\b[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i
+		if(email != '' && pattern.test(email)){
+			var data = $(this).serialize();
+			$.ajax({
+				url: base_url + "contact/subscribe",
+				method: "POST",
+				data: data,
+				success: function (data) {
+					data = JSON.parse(data);
+					if(data['error'] == 'true'){
+						$('#email-error').html("Error! Please Try after sometime.");
+					} else {
+						$("#Email").val('');
+						$('#email-error').html("");
+						$('#email-success').html("Subscribed Successfully!");
+					}
+					return false;
+				}
+			});
+		} else {
+			$('#email-error').html("Enter a valid email.");
+		}
+	});
 });

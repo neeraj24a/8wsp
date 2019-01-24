@@ -29,5 +29,18 @@ class ContactController extends Controller {
             ]);
         }
     }
+	
+	public function actionSubscribe()
+	{
+		$data = Yii::$app->request->post();
+		$model = new ContactForm();
+		$res = [];
+		if($model->sendSubscribeEmail(Yii::$app->params['adminEmail'], $data['email'])){
+			$res['error'] = 'false';
+		} else {
+			$res['error'] = 'true';
+		}
+		echo json_encode($res);
+	}
     
 }

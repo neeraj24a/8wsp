@@ -31,6 +31,158 @@ use common\widgets\Alert;
         </div>
     </div>
 </div>
+<div class="shopify-section">
+	<div class="page-width">
+		<div class="grid--uniform grid--view-items">
+			<div class="home_bnnr_content">
+				<div class="container">
+					<div class="bnnr_content">
+						<h1>JOIN THE NUMBER #1 DJ POOL</h1>
+						<div class="left">
+							<h5>
+								High Quality Audio &amp; Video <br>
+								Classics Avialble in Audio &amp; Video <br>
+								All Versions Available <br>
+								Easy Desktop Downloader <br>
+								Fast Downloads <br>
+								Affordable Membership Pricing
+							</h5>
+							<p></p>
+						</div>
+						<div class="right">
+							<h5>
+								All The Newest Tracks First <br>
+								Upload over 200 Tracks a Week <br>
+								The most Video Edits in the World <br>
+								Unlimited Downloads <br>
+								Dropbox Feature <br>
+								User Freindly
+							</h5>
+							<p></p>
+						</div>
+						<p></p>
+					</div>
+					<p></p>
+				</div>
+				<p></p>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="shopify-section index-section">
+    <div class="page-width">
+        <div class="section-header text-center">
+            <h2>POOL MEMBERSHIP PLANS</h2>
+        </div>
+        <div class="grid--uniform grid--view-items">
+			<section id="pricing-table">
+				<div class="container">
+					<div class="row">
+						<div class="pricing">
+							<div class="pull-left one-third small--one-whole pad-2p">
+								<div class="type">
+									<p>Monthly Bronze</p>
+								</div>
+								<div class="plan">
+									<div class="header">
+										<span>$</span>9<sup>.99*</sup>
+										<p class="month">For 1st month then $19.99/Mo. </p>
+									</div>
+									<div class="content">
+										<ul>
+											<li>No Discount On Membership</li>
+											<li>10% Off On Store</li>
+											<li>No Free 8th T-Shirt</li>
+											<li>Unlimited Downloads Audio & Video</li>
+											<li>All content id3 Tagged</li>
+											<li>Serato Ready Cue Points</li>
+											<li>Fast Downloads</li>
+											<li>Trending Charts</li>
+											<li>Desktop Application</li>
+											<li>High Quality 320kbps Files</li>
+											<li>Exclusive Remix Video Edits</li>
+											<li>Multiple Versions Available</li>
+										</ul>
+									</div>		
+									<div class="price">
+										<a href="https://www.8thwonderpromos.com/amember/signup/monthly" target="_blank" class="bottom">
+											<p class="cart">Subscribe</p>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="pull-left one-third small--one-whole pad-2p">
+								<div class="type standard">
+									<p>Annual Platinum</p>
+								</div>
+								<div class="plan">
+									<div class="header">
+										<span>$</span>174<sup>.99</sup>
+										<p class="month">per year</p>
+									</div>
+									<div class="content">
+										<ul>
+											<li>25% Off On Membership</li>
+											<li>30% Off On Store</li>
+											<li>No Free 8th T-Shirt</li>
+											<li>Unlimited Downloads Audio & Video</li>
+											<li>All content id3 Tagged</li>
+											<li>Serato Ready Cue Points</li>
+											<li>Fast Downloads</li>
+											<li>Trending Charts</li>
+											<li>Desktop Application</li>
+											<li>High Quality 320kbps Files</li>
+											<li>Exclusive Remix Video Edits</li>
+											<li>Multiple Versions Available</li>
+										</ul>
+									</div>
+									<div class="price">
+										<a href="https://www.8thwonderpromos.com/amember/signup/yearly" target="_blank" class="bottom">
+											<p class="cart">Subscribe</p>
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<div class="pull-left one-third small--one-whole pad-2p">
+								<div class="type ultimate">
+									<p>Quaterly Gold</p>
+								</div>
+								<div class="plan">
+									<div class="header">
+										<span>$</span>54<sup>.99</sup>
+										<p class="month">per 3 months</p>
+									</div>
+									<div class="content">
+										<ul>
+											<li>10% Off On Membership</li>
+											<li>20% Off On Store</li>
+											<li>No Free 8th T-Shirt</li>
+											<li>Unlimited Downloads Audio & Video</li>
+											<li>All content id3 Tagged</li>
+											<li>Serato Ready Cue Points</li>
+											<li>Fast Downloads</li>
+											<li>Trending Charts</li>
+											<li>Desktop Application</li>
+											<li>High Quality 320kbps Files</li>
+											<li>Exclusive Remix Video Edits</li>
+											<li>Multiple Versions Available</li>
+										</ul>
+									</div>
+									<div class="price">
+										<a href="https://www.8thwonderpromos.com/amember/signup/quaterly" target="_blank" class="bottom">
+											<p class="cart">Subscribe</p>
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+	</div>
+</div>
 <div class="shopify-section index-section">
     <div class="page-width">
         <div class="section-header text-center">

@@ -30,6 +30,13 @@ $this->title = "Cart";
                 CONTACT US
                 </a>
              </li>
+             <?php if(Yii::$app->user->isGuest): ?>
+			 <li class="mobile-nav__item border-bottom">
+                <a href="https://www.8thwonderpromos.com/amember/signup" class="mobile-nav__link">
+                SIGN UP
+                </a>
+             </li>
+             <?php endif; ?>
           </ul>
        </nav>
        <header class="site-header logo--center border-bottom" role="banner">
@@ -74,6 +81,11 @@ $this->title = "Cart";
                          <li >
                             <a href="https://pool.8thwonderpromos.com/contact-us" class="site-nav__link site-nav__link--main">CONTACT US</a>
                          </li>
+						 <?php if(Yii::$app->user->isGuest): ?>
+						 <li>
+							 <a href="https://www.8thwonderpromos.com/amember/signup" class="site-nav__link site-nav__link--main">SIGN UP</a>
+						 </li>
+						 <?php endif; ?>
                       </ul>
                 </nav>
             </div>

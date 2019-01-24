@@ -25,18 +25,18 @@ use yii\helpers\Url;
             <div class="grid__item medium-up--one-half">
                <div class="site-footer__newsletter">
                   <form method="post" action="#" id="contact_form" accept-charset="UTF-8" class="contact-form">
-                     <input type="hidden" name="form_type" value="customer" /><input type="hidden" name="utf8" value="✓" />
                      <label for="Email" class="h4">Join our mailing list</label>
                      <div class="input-group">
-                        <input type="hidden" name="contact[tags]" value="newsletter">
                         <input type="email"
-                           name="contact[email]"
+                           name="email"
                            id="Email"
                            class="input-group__field newsletter__input"
                            value=""
                            placeholder="Email address"
                            autocorrect="off"
                            autocapitalize="off">
+						<span id="email-error" style="position: absolute; color: red;"></span>
+						<span id="email-success" style="position: absolute; color: green;"></span>
                         <span class="input-group__btn">
                         <button type="submit" class="btn newsletter__submit" name="commit" id="Subscribe">
                         <span class="newsletter__submit-text--large">Subscribe</span>
@@ -64,7 +64,7 @@ use yii\helpers\Url;
             </div>
             <div class="grid__item medium-up--one-half">
                <div class="site-footer__copyright site-footer__copyright--right medium-up--text-right">
-                  <small class="site-footer__copyright-content">&copy; 2018, <a href="index.html" title="">8thwonderpromos</a></small>
+                  <small class="site-footer__copyright-content">&copy; <?php echo date('Y'); ?>, <a href="index.html" title="">8thwonderpromos</a></small>
                </div>
             </div>
          </div>
