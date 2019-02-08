@@ -689,7 +689,35 @@ $this->title = "Checkout";
 </div>
 <?php $this->registerJs(<<< EOT_JS
 $(document).ready(function(){
-    $('#ship-bill').click(function () {
+	if($('#saved_billing').val() != ""){
+		var opt = $('#saved_billing').find("option:selected").text();
+		if(opt.length != 0){
+            var option = opt.split(",");
+            $("#addressform-first_name").val(option[0]);
+            $("#addressform-last_name").val(option[1]);
+            $("#addressform-address_line_1").val(option[2]);
+            $("#addressform-address_line_2").val(option[3]);
+            $("#addressform-city").val(option[4]);
+            $("#addressform-state").val(option[5]);
+            $("#addressform-zip").val(option[6]);
+            $("#addressform-contact").val(option[7]);
+        }
+	}
+	if($('#saved_shipping').val() != ""){
+		var opt = $('#saved_shipping').find("option:selected").text();
+		if(opt.length != 0){
+            var option = opt.split(",");
+            $("#addressform-ship_first_name").val(option[0]);
+            $("#addressform-ship_last_name").val(option[1]);
+            $("#addressform-ship_address_line_1").val(option[2]);
+            $("#addressform-ship_address_line_2").val(option[3]);
+            $("#addressform-ship_city").val(option[4]);
+            $("#addressform-ship_state").val(option[5]);
+            $("#addressform-ship_zip").val(option[6]);
+            $("#addressform-ship_contact").val(option[7]);
+        }
+	}
+	$('#ship-bill').click(function () {
         if ($(this).is(':checked')) {
             $('#billing :input').each(function () {
                 var inpt = $(this);
@@ -714,32 +742,54 @@ $(document).ready(function(){
         }
     });
     $('#saved_billing').change(function(){
-        var opt = $(this).find("option:selected").text();
-        if(opt.length != 0){
-            var option = opt.split(",");
-            $("#addressform-first_name").val(option[0]);
-            $("#addressform-last_name").val(option[1]);
-            $("#addressform-address_line_1").val(option[2]);
-            $("#addressform-address_line_2").val(option[3]);
-            $("#addressform-city").val(option[4]);
-            $("#addressform-state").val(option[5]);
-            $("#addressform-zip").val(option[6]);
-            $("#addressform-contact").val(option[7]);
-        }
+		var opt = $(this).find("option:selected").text();
+		if($(this).val() != ""){
+			if(opt.length != 0){
+				var option = opt.split(",");
+				$("#addressform-first_name").val(option[0]);
+				$("#addressform-last_name").val(option[1]);
+				$("#addressform-address_line_1").val(option[2]);
+				$("#addressform-address_line_2").val(option[3]);
+				$("#addressform-city").val(option[4]);
+				$("#addressform-state").val(option[5]);
+				$("#addressform-zip").val(option[6]);
+				$("#addressform-contact").val(option[7]);
+			}
+		} else {
+			$("#addressform-first_name").val("");
+			$("#addressform-last_name").val("");
+			$("#addressform-address_line_1").val("");
+			$("#addressform-address_line_2").val("");
+			$("#addressform-city").val("");
+			$("#addressform-state").val("");
+			$("#addressform-zip").val("");
+			$("#addressform-contact").val("");
+		}
     });
     $('#saved_shipping').change(function(){
         var opt = $(this).find("option:selected").text();
-        if(opt.length != 0){
-            var option = opt.split(",");
-            $("#addressform-ship_first_name").val(option[0]);
-            $("#addressform-ship_last_name").val(option[1]);
-            $("#addressform-ship_address_line_1").val(option[2]);
-            $("#addressform-ship_address_line_2").val(option[3]);
-            $("#addressform-ship_city").val(option[4]);
-            $("#addressform-ship_state").val(option[5]);
-            $("#addressform-ship_zip").val(option[6]);
-            $("#addressform-ship_contact").val(option[7]);
-        }
+		if($(this).val() != ""){
+			if(opt.length != 0){
+				var option = opt.split(",");
+				$("#addressform-ship_first_name").val(option[0]);
+				$("#addressform-ship_last_name").val(option[1]);
+				$("#addressform-ship_address_line_1").val(option[2]);
+				$("#addressform-ship_address_line_2").val(option[3]);
+				$("#addressform-ship_city").val(option[4]);
+				$("#addressform-ship_state").val(option[5]);
+				$("#addressform-ship_zip").val(option[6]);
+				$("#addressform-ship_contact").val(option[7]);
+			}
+		} else {
+			$("#addressform-ship_first_name").val("");
+			$("#addressform-ship_last_name").val("");
+			$("#addressform-ship_address_line_1").val("");
+			$("#addressform-ship_address_line_2").val("");
+			$("#addressform-ship_city").val("");
+			$("#addressform-ship_state").val("");
+			$("#addressform-ship_zip").val("");
+			$("#addressform-ship_contact").val("");
+		}
     });
 }); 
 EOT_JS
